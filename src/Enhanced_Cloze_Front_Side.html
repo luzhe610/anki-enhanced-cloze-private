@@ -12,8 +12,6 @@
 
     <div id="main-section" class="content">
         <!-- Separation line -->
-        {{cloze:Cloze99}}
-        <!-- Separation line -->
         {{cloze:Cloze1}}
         <!-- Separation line -->
         {{cloze:Cloze2}}
@@ -135,6 +133,11 @@
     var genuineClozeTotalNumber = $('.genuine-cloze').length;
 
     $(function () {
+        // HIDE TOPIC 
+        if ($('#topic').text().lastIndexOf('#')) {
+            $('#topic').hide(0)
+        }
+
         // INITIALIZE CLOZES
         //      genuine clozes refer to those belong to current card and need to be answered, e.g. {{c2::abc}} on card2 
         //      pseudo clozes refer to the opposite, e.g. {{c1::abc}} and {{c3::abc}} on card2 
@@ -144,13 +147,13 @@
 
         // SHORTEN TAGS
         //      leaving only the last part if hierarchical tags are used, i.e. tag1::tag2::tag3 -> tag3
-        $('#tags kbd').each(function (index, elem) {
+        $('#tags span').each(function (index, elem) {
             $(elem).text($(elem).text().replace(/[^:\s]+::/g, ''));
         });
 
         // GENERATE LINK
         //      turn url-like plain text into clickable link
-        $('#source').html(function (index, oldhtml) {
+        $('#card-body').html(function (index, oldhtml) {
             return Autolinker.link(oldhtml, {
                 phone: false,
                 truncate: {
@@ -167,7 +170,9 @@
         }
 
         // SCROLL TO FIRST CLOZE
-        scrollToCloze($('.genuine-cloze').first().get(0));
+        if (genuineClozeTotalNumber) {
+            scrollToCloze($('.genuine-cloze').first().get(0));
+        }
 
         // SETUP KEY BINDING
         $(document).bind('keyup', 'i', function () {

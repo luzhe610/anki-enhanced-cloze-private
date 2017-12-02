@@ -31,7 +31,7 @@ def generate_enhanced_cloze(note):
     # cloze_id means, eg. c1, cloze_number means, eg. 1
 
     src_content = note[CONTENT_FIELD_NAME]
-    if re.search(r"\S", note[NOTE_FIELD_NAME]) != None:
+    if re.search(r"\S", note[NOTE_FIELD_NAME]):
         src_content += '<br><div id="note" class="content">' + \
             note[NOTE_FIELD_NAME] + '</div>'
 

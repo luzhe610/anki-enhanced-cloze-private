@@ -2,7 +2,7 @@
 
 @font-face {
     font-family: 'font-main';
-    src: url('_方正兰亭黑.ttf');
+    src: url('_msyh.ttc');
     font-weight: normal;
     font-style: normal;
 }
@@ -14,18 +14,11 @@
     font-style: normal;
 }
 
-@font-face {
-    font-family: 'font-mono-mobile';
-    src: url('_SourceCodePro-Regular.ttf');
-    font-weight: normal;
-    font-style: normal;
-}
-
 
 /* ------------Style------------- */
 
 #card-body {
-    font: 16px/1.5em 'font-main';
+    font: 16px/1.6em 'font-main', sans-serif;
     margin-top: 4.5em;
     margin-bottom: 100px;
 }
@@ -36,12 +29,8 @@
 }
 
 .header {
-    font: bold 16px/1.5em 'font-mono';
+    font: bold 16px/1.6em 'font-mono', monospace;
     padding-left: 0.5em;
-}
-
-.mobile .header {
-    font: 'font-mono-mobile';
 }
 
 .header-red {
@@ -93,11 +82,7 @@
 }
 
 #info-section {
-    font-family: 'font-mono';
-}
-
-.mobile #info-section {
-    font-family: 'font-mono-mobile';
+    font-family: 'font-mono', monospace;
 }
 
 #note {
@@ -197,13 +182,9 @@ hr {
 }
 
 pre {
-    font-family: 'font-mono' !important;
+    font-family: 'font-mono', monospace !important;
     border-left: 2px solid #0f9d58;
     padding-left: 10px;
-}
-
-.mobile pre {
-    font-family: 'font-mono-mobile' !important;
 }
 
 code,
@@ -211,14 +192,6 @@ kbd,
 var,
 samp,
 tt {
-    font-family: 'font-mono' !important;
+    font-family: 'font-mono', monospace !important;
     background-color: #fdf3d6;
-}
-
-.mobile code,
-.mobile kbd,
-.mobile var,
-.mobile samp,
-.mobile tt {
-    font-family: 'font-mono-mobile' !important;
 }
