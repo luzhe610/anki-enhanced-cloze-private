@@ -1,0 +1,224 @@
+/* ------------ Font ------------ */
+
+@font-face {
+    font-family: 'font-main';
+    src: url('_方正兰亭黑.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'font-mono';
+    src: url('_Microsoft-Yahei-Mono.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'font-mono-mobile';
+    src: url('_SourceCodePro-Regular.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+/* ------------Style------------- */
+
+#card-body {
+    font: 16px/1.5em 'font-main';
+    margin-top: 4.5em;
+    margin-bottom: 100px;
+}
+
+.content {
+    padding-left: 0.5em;
+    border-left: 4px solid transparent;
+}
+
+.header {
+    font: bold 16px/1.5em 'font-mono';
+    padding-left: 0.5em;
+}
+
+.mobile .header {
+    font: 'font-mono-mobile';
+}
+
+.header-red {
+    border-left: 4px solid #db4437;
+    color: #db4437;
+}
+
+.header-green {
+    border-left: 4px solid #0f9d58;
+    color: #0f9d58;
+}
+
+.header-blue {
+    border-left: 4px solid #4285f4;
+    color: #4285f4;
+}
+
+.header-yellow {
+    border-left: 4px solid #f4b400;
+    color: #f4b400;
+}
+
+.genuine-cloze {
+    border-bottom: 1px solid #db4437;
+    padding-bottom: 1px;
+}
+
+.genuine-cloze[show-state="hint"] {
+    border-bottom: 2px solid #db4437;
+    background-color: #ffd6d4;
+}
+
+.pseudo-cloze {
+    border-bottom: 1px solid #4285f4;
+    padding-bottom: 1px;
+}
+
+.pseudo-cloze[show-state="hint"] {
+    border-bottom: 2px solid #4285f4;
+    background-color: #dce8ff;
+}
+
+#topic-section {
+    width: 100%;
+    z-index: 9;
+    background-color: white;
+    position: fixed;
+    top: 0;
+}
+
+#info-section {
+    font-family: 'font-mono';
+}
+
+.mobile #info-section {
+    font-family: 'font-mono-mobile';
+}
+
+#note {
+    display: none;
+}
+
+#note-switch {
+    text-align: center;
+    font-size: 1.2em;
+    color: #db4437;
+    margin-bottom: 1em;
+}
+
+#show-one-cloze-left,
+#show-one-cloze-right,
+#no-more-cloze {
+    height: 100%;
+    width: 30px;
+    position: fixed;
+    z-index: 9;
+    top: 0;
+    background-color: transparent;
+}
+
+#show-one-cloze-left {
+    left: 0;
+}
+
+#show-one-cloze-right {
+    right: 0;
+}
+
+#no-more-cloze {
+    width: 10px;
+    background-color: #db4437;
+    left: 0;
+    display: none;
+}
+
+#show-all-pseudo-clozes {
+    height: 30px;
+    width: 100%;
+    position: fixed;
+    z-index: 9;
+    top: 0;
+    left: 0;
+    background-color: transparent;
+}
+
+i {
+    padding-right: 0.5em;
+}
+
+u {
+    background-color: #dbffed;
+    border-bottom: 2px solid #0f9d58;
+    text-decoration: none;
+}
+
+a {
+    color: #444444;
+    word-wrap: break-word;
+}
+
+.mobile ol,
+.mobile ul,
+.mobile li {
+    margin-left: -0.5em;
+}
+
+.mobile li {
+    margin: 0.1em, inherit;
+}
+
+table {
+    border-collapse: collapse;
+    margin: 0.5em;
+}
+
+thead tr,
+tfoot tr {
+    border-top: 2px solid #0f9d58;
+    border-bottom: 2px solid #0f9d58;
+}
+
+td,
+th {
+    border: 1px solid #0f9d58;
+    padding: 0.3em 0.5em;
+}
+
+hr {
+    border-top: 2px solid #aaaaaa;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+pre {
+    font-family: 'font-mono' !important;
+    border-left: 2px solid #0f9d58;
+    padding-left: 10px;
+}
+
+.mobile pre {
+    font-family: 'font-mono-mobile' !important;
+}
+
+code,
+kbd,
+var,
+samp,
+tt {
+    font-family: 'font-mono' !important;
+    background-color: #fdf3d6;
+}
+
+.mobile code,
+.mobile kbd,
+.mobile var,
+.mobile samp,
+.mobile tt {
+    font-family: 'font-mono-mobile' !important;
+}
