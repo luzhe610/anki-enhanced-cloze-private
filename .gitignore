@@ -104,3 +104,4 @@ ENV/
 anki/
 aqt/
 .vscode/
+.vscode/temp.sql
