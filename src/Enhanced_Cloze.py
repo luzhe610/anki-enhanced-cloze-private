@@ -158,15 +158,24 @@ def on_add_cards(self, _old):
     note = self.editor.note
     if not note or not check_model(note.model()):
         return _old(self)
+    remove_style(note)
     generate_enhanced_cloze(note)
     ret = _old(self)
     return ret
+
+
+def remove_style(note):
+    note[CONTENT_FIELD_NAME] = re.sub(
+        r"(<[^>]*)(style\s*=\s*(?P<quot>[\"\'])[\s\S]*?(?P=quot))([^>]*>)", "\g<1>\g<4>", note[CONTENT_FIELD_NAME])
+    note[NOTE_FIELD_NAME] = re.sub(
+        r"(<[^>]*)(style\s*=\s*(?P<quot>[\"\'])[\s\S]*?(?P=quot))([^>]*>)", "\g<1>\g<4>", note[NOTE_FIELD_NAME])
 
 
 def on_edit_current_save(self, _old):
     note = self.editor.note
     if not note or not check_model(note.model()):
         return _old(self)
+    remove_style(note)
     generate_enhanced_cloze(note)
     ret = _old(self)
     return ret
@@ -195,14 +204,19 @@ def update_all_enhanced_cloze(self):
         note = mw.col.getNote(nid)
         if not check_model(note.model()):
             continue
+        remove_style(note)
         generate_enhanced_cloze(note)
         note.flush()
 
 
 def setup_menu(self):
     browser = self
-    menu = browser.form.menuEdit
-    menu.addSeparator()
+    try:
+        menu = browser.menuUtilities
+    except:
+        browser.menuUtilities = QMenu("Utilites", browser.form.menubar)
+        menu = browser.menuUtilities
+    browser.form.menubar.addMenu(menu)
     a = menu.addAction('Update Enhanced Clozes')
     a.setShortcut(QKeySequence(UPDATE_ENHANCED_CLOZE_SHORTCUT))
     a.triggered.connect(

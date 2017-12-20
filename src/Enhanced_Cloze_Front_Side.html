@@ -213,6 +213,7 @@
             $('.genuine-cloze[index=' + indexOfGenuineClozeToShow + ']').each(function (index, elem) {
                 if ($(elem).parents('#note:hidden').length) {
                     $("#note").show(0);
+                    scrollToCloze($('#note')); // scroll to the top of note
                 } else {
                     if (!$(elem).visible()) {
                         scrollToCloze(elem);
