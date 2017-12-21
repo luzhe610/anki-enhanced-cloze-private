@@ -158,24 +158,17 @@ def on_add_cards(self, _old):
     note = self.editor.note
     if not note or not check_model(note.model()):
         return _old(self)
-    remove_style(note)
+    remove_style_of_note(note)
     generate_enhanced_cloze(note)
     ret = _old(self)
     return ret
-
-
-def remove_style(note):
-    note[CONTENT_FIELD_NAME] = re.sub(
-        r"(<[^>]*)(style\s*=\s*(?P<quot>[\"\'])[\s\S]*?(?P=quot))([^>]*>)", "\g<1>\g<4>", note[CONTENT_FIELD_NAME])
-    note[NOTE_FIELD_NAME] = re.sub(
-        r"(<[^>]*)(style\s*=\s*(?P<quot>[\"\'])[\s\S]*?(?P=quot))([^>]*>)", "\g<1>\g<4>", note[NOTE_FIELD_NAME])
 
 
 def on_edit_current_save(self, _old):
     note = self.editor.note
     if not note or not check_model(note.model()):
         return _old(self)
-    remove_style(note)
+    remove_style_of_note(note)
     generate_enhanced_cloze(note)
     ret = _old(self)
     return ret
@@ -204,7 +197,7 @@ def update_all_enhanced_cloze(self):
         note = mw.col.getNote(nid)
         if not check_model(note.model()):
             continue
-        remove_style(note)
+        remove_style_of_note(note)
         generate_enhanced_cloze(note)
         note.flush()
 
@@ -227,6 +220,27 @@ def on_save_now(self, callback=None):
     update_all_enhanced_cloze(self)
 
 
+def remove_style_in_editor(self):
+    remove_style_of_note(self.note)
+    self.mw.progress.timer(100, self.loadNote, False)
+
+
+def remove_style_of_note(note):
+    note[CONTENT_FIELD_NAME] = remove_style_of_string(note[CONTENT_FIELD_NAME])
+    note[NOTE_FIELD_NAME] = remove_style_of_string(note[NOTE_FIELD_NAME])
+
+
+def remove_style_of_string(string):
+    return re.sub(r"(<[^>]*)(style\s*=\s*(?P<quot>[\"\'])[\s\S]*?(?P=quot))([^>]*>)", "\g<1>\g<4>", string)
+
+
+def setup_buttons(self):
+    self._addButton(
+        "Remove Style", lambda: self.remove_style_in_editor(),
+        text="X", tip="Remove Style", key="Ctrl+Shift+R"
+    )
+
+
 AddCards.addCards = wrap(AddCards.addCards, on_add_cards, "around")
 
 EditCurrent.onSave = wrap(EditCurrent.onSave, on_edit_current_save, "around")
@@ -234,3 +248,6 @@ EditCurrent.onSave = wrap(EditCurrent.onSave, on_edit_current_save, "around")
 Editor.saveNow = wrap(Editor.saveNow, on_save_now, "before")
 
 addHook("browser.setupMenus", setup_menu)
+
+Editor.remove_style_in_editor = remove_style_in_editor
+Editor.setupButtons = wrap(Editor.setupButtons, setup_buttons)
