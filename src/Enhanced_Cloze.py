@@ -190,6 +190,21 @@ def update_all_enhanced_clozes_in_browser(self, evt=None):
     mw.reset()
 
 
+def temp(note):
+
+    l = ["hll", "c", "err", "esc", "g", "k", "l", "n", "o", "x", "p", "ch", "cm", "cp", "cpf", "c1", "cs", "gd", "ge", "gr", "gh", "gi", "go", "gp", "gs", "gu", "gt", "kc", "kd", "kn", "kp", "kr", "kt", "ld", "m", "s", "na", "nb", "nc",
+         "no", "nd", "ni", "ne", "nf", "nl", "nn", "nx", "py", "nt", "nv", "ow", "w", "mb", "mf", "mh", "mi", "mo", "sa", "sb", "sc", "dl", "sd", "s2", "se", "sh", "si", "sx", "sr", "s1", "ss", "bp", "fm", "vc", "vg", "vi", "vm", "il"]
+    note["# Content"] = re.sub(
+        r'<\s*div\s*class\s*=\s*"highlight"\s*>', '<div class="pyg-highlight">', note["# Content"])
+    note["Note"] = re.sub(
+        r'<\s*div\s*class\s*=\s*"highlight"\s*>', '<div class="pyg-highlight">', note["Note"])
+    for i in l:
+        note["# Content"] = re.sub(
+            r'<\s*span\s*class\s*=\s*"%s"\s*>' % i, '<span class="pyg-%s">' % i, note["# Content"])
+        note["Note"] = re.sub(
+            r'<\s*span\s*class\s*=\s*"%s"\s*>' % i, '<span class="pyg-%s">' % i, note["Note"])
+
+
 def update_all_enhanced_cloze(self):
     mw = self.mw
     nids = mw.col.findNotes("*")
@@ -199,6 +214,7 @@ def update_all_enhanced_cloze(self):
             continue
         remove_style_of_note(note)
         generate_enhanced_cloze(note)
+        # temp(note)
         note.flush()
 
 
@@ -231,7 +247,11 @@ def remove_style_of_note(note):
 
 
 def remove_style_of_string(string):
-    return re.sub(r"(<[^>]*)(style\s*=\s*(?P<quot>[\"\'])[\s\S]*?(?P=quot))([^>]*>)", "\g<1>\g<4>", string)
+    s = re.sub(
+        r"(<[^>]*)(style\s*=\s*(?P<quot>[\"\'])[\s\S]*?(?P=quot))([^>]*>)", "\g<1>\g<4>", string)
+    s = re.sub(r"align=\"left\"", "", s)
+    s = re.sub(r"valign=\"middle\"", "", s)
+    return s
 
 
 def setup_buttons(self):
