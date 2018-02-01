@@ -25,6 +25,7 @@ CONTENT_FIELD_NAME = "# Content"
 NOTE_FIELD_NAME = "Note"
 IN_USE_CLOZES_FIELD_NAME = "In-use Clozes"
 UPDATE_ENHANCED_CLOZE_SHORTCUT = "Ctrl+Alt+C"
+MAX_CLOZE_FIELD_NUMBER = 100
 
 
 def generate_enhanced_cloze(note):
@@ -35,13 +36,15 @@ def generate_enhanced_cloze(note):
         src_content += '<br><div id="note" class="content">' + \
             note[NOTE_FIELD_NAME] + '</div>'
 
+    src_content = remove_cloze_padding(src_content)
+
     # Get ids of in-use clozes
     cloze_start_regex = r"\{\{c\d+::"
     cloze_start_matches = re.findall(cloze_start_regex, src_content)
 
     # if no clozes are found, empty Cloze1 ~ Cloze20 and fill in Cloze99
     if not cloze_start_matches:
-        for i_cloze_field_number in range(1, 20 + 1):
+        for i_cloze_field_number in range(1, MAX_CLOZE_FIELD_NUMBER + 1):
             dest_field_name = "Cloze%s" % i_cloze_field_number
             note[dest_field_name] = ""
 
@@ -60,7 +63,7 @@ def generate_enhanced_cloze(note):
 
         # Fill in content in in-use cloze fields and empty content in not-in-use fields
         global current_cloze_field_number
-        for current_cloze_field_number in range(1, 20 + 1):
+        for current_cloze_field_number in range(1, MAX_CLOZE_FIELD_NUMBER + 1):
 
             dest_field_name = "Cloze%s" % current_cloze_field_number
             dest_field_content = ""
@@ -159,6 +162,7 @@ def on_add_cards(self, _old):
     if not note or not check_model(note.model()):
         return _old(self)
     remove_style_of_note(note)
+    add_cloze_padding_of_note(note)
     generate_enhanced_cloze(note)
     ret = _old(self)
     return ret
@@ -169,6 +173,7 @@ def on_edit_current_save(self, _old):
     if not note or not check_model(note.model()):
         return _old(self)
     remove_style_of_note(note)
+    add_cloze_padding_of_note(note)
     generate_enhanced_cloze(note)
     ret = _old(self)
     return ret
@@ -198,6 +203,7 @@ def update_all_enhanced_cloze(self):
         if not check_model(note.model()):
             continue
         remove_style_of_note(note)
+        add_cloze_padding_of_note(note)
         generate_enhanced_cloze(note)
         note.flush()
 
@@ -220,8 +226,9 @@ def on_save_now(self, callback=None):
     update_all_enhanced_cloze(self)
 
 
-def remove_style_in_editor(self):
+def process_note_in_editor(self):
     remove_style_of_note(self.note)
+    add_cloze_padding_of_note(self.note)
     self.mw.progress.timer(100, self.loadNote, False)
 
 
@@ -231,16 +238,34 @@ def remove_style_of_note(note):
 
 
 def remove_style_of_string(string):
-    s = re.sub(
+    string = re.sub(
         r"(<[^>]*)(style\s*=\s*(?P<quot>[\"\'])[\s\S]*?(?P=quot))([^>]*>)", "\g<1>\g<4>", string)
-    s = re.sub(r"align=\"left\"", "", s)
-    s = re.sub(r"valign=\"middle\"", "", s)
-    return s
+    string = re.sub(r"align=\"left\"", "", string)
+    string = re.sub(r"valign=\"middle\"", "", string)
+    return string
+
+
+def add_cloze_padding_of_note(note):
+    note[CONTENT_FIELD_NAME] = add_cloze_padding_of_string(
+        note[CONTENT_FIELD_NAME])
+    note[NOTE_FIELD_NAME] = add_cloze_padding_of_string(note[NOTE_FIELD_NAME])
+
+
+def add_cloze_padding_of_string(string):
+    string = re.sub(r"(\{\{c\d+::)(?!``)", "\g<1>``", string)
+    string = re.sub(r"(?<!``)(\}\})", "``\g<1>", string)
+    return string
+
+
+def remove_cloze_padding(string):
+    string = re.sub(r"(\{\{c\d+::)``", "\g<1>", string)
+    string = re.sub(r"``(\}\})", "\g<1>", string)
+    return string
 
 
 def setup_buttons(self):
     self._addButton(
-        "Remove Style", lambda: self.remove_style_in_editor(),
+        "Remove Style", lambda: self.process_note_in_editor(),
         text="X", tip="Remove Style", key="Ctrl+Shift+R"
     )
 
@@ -249,9 +274,9 @@ AddCards.addCards = wrap(AddCards.addCards, on_add_cards, "around")
 
 EditCurrent.onSave = wrap(EditCurrent.onSave, on_edit_current_save, "around")
 
-Editor.saveNow = wrap(Editor.saveNow, on_save_now, "before")
+# Editor.saveNow = wrap(Editor.saveNow, on_save_now, "before")
 
 addHook("browser.setupMenus", setup_menu)
 
-Editor.remove_style_in_editor = remove_style_in_editor
+Editor.process_note_in_editor = process_note_in_editor
 Editor.setupButtons = wrap(Editor.setupButtons, setup_buttons)
