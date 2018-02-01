@@ -36,7 +36,7 @@ def generate_enhanced_cloze(note):
         src_content += '<br><div id="note" class="content">' + \
             note[NOTE_FIELD_NAME] + '</div>'
 
-    src_content = remove_cloze_padding(src_content)
+    src_content = remove_cloze_style_tag(src_content)
 
     # Get ids of in-use clozes
     cloze_start_regex = r"\{\{c\d+::"
@@ -162,7 +162,7 @@ def on_add_cards(self, _old):
     if not note or not check_model(note.model()):
         return _old(self)
     remove_style_of_note(note)
-    add_cloze_padding_of_note(note)
+    add_cloze_style_tag_of_note(note)
     generate_enhanced_cloze(note)
     ret = _old(self)
     return ret
@@ -173,7 +173,7 @@ def on_edit_current_save(self, _old):
     if not note or not check_model(note.model()):
         return _old(self)
     remove_style_of_note(note)
-    add_cloze_padding_of_note(note)
+    add_cloze_style_tag_of_note(note)
     generate_enhanced_cloze(note)
     ret = _old(self)
     return ret
@@ -203,7 +203,13 @@ def update_all_enhanced_cloze(self):
         if not check_model(note.model()):
             continue
         remove_style_of_note(note)
-        add_cloze_padding_of_note(note)
+        add_cloze_style_tag_of_note(note)
+
+        # # in case you have to remove
+        # note[CONTENT_FIELD_NAME] = remove_cloze_style_tag(
+        #     note[CONTENT_FIELD_NAME])
+        # note[NOTE_FIELD_NAME] = remove_cloze_style_tag(note[NOTE_FIELD_NAME])
+
         generate_enhanced_cloze(note)
         note.flush()
 
@@ -228,7 +234,7 @@ def on_save_now(self, callback=None):
 
 def process_note_in_editor(self):
     remove_style_of_note(self.note)
-    add_cloze_padding_of_note(self.note)
+    add_cloze_style_tag_of_note(self.note)
     self.mw.progress.timer(100, self.loadNote, False)
 
 
@@ -245,21 +251,21 @@ def remove_style_of_string(string):
     return string
 
 
-def add_cloze_padding_of_note(note):
-    note[CONTENT_FIELD_NAME] = add_cloze_padding_of_string(
+def add_cloze_style_tag_of_note(note):
+    note[CONTENT_FIELD_NAME] = add_cloze_style_tag_of_string(
         note[CONTENT_FIELD_NAME])
-    note[NOTE_FIELD_NAME] = add_cloze_padding_of_string(note[NOTE_FIELD_NAME])
+    note[NOTE_FIELD_NAME] = add_cloze_style_tag_of_string(note[NOTE_FIELD_NAME])
 
 
-def add_cloze_padding_of_string(string):
-    string = re.sub(r"(\{\{c\d+::)(?!``)", "\g<1>``", string)
-    string = re.sub(r"(?<!``)(\}\})", "``\g<1>", string)
+def add_cloze_style_tag_of_string(string):
+    string = re.sub(
+        r"(\{\{c\d+::)(?!<span class=\"cloze-in-editor\">)([\s\S]*?)(\}\})", "\g<1><span class=\"cloze-in-editor\">\g<2></span>\g<3>", string)
     return string
 
 
-def remove_cloze_padding(string):
-    string = re.sub(r"(\{\{c\d+::)``", "\g<1>", string)
-    string = re.sub(r"``(\}\})", "\g<1>", string)
+def remove_cloze_style_tag(string):
+    string = re.sub(
+        r"(\{\{c\d+::)<span class=\"cloze-in-editor\">([\s\S]*?)(</span>)(\}\})", "\g<1>\g<2>\g<4>", string)
     return string
 
 
