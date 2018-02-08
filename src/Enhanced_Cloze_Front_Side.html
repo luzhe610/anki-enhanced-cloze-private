@@ -1,61 +1,55 @@
 <div id="card-body">
     <div id="topic-section" class="header header-red">
-        {{#Domain}}
-        <div id="domain">@ {{Domain}}</div>
-        {{/Domain}}
-
-        <!-- Separation line -->
-        {{#Topic}}
-        <div id="topic"># {{Topic}}</div>
-        {{/Topic}}
+        <table>
+            <tr>
+                <td rowspan="2">
+                    <img src="_ui_mark.png" id="star" class="marked img-no-border" draggable="false" style="display: none;">
+                    <div id="domain-icon"></div>
+                </td>
+                <td>
+                    {{#Domain}}
+                    <div id="domain">@ {{Domain}}
+                    </div>
+                    {{/Domain}}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    {{#Topic}}
+                    <div id="topic"># {{Topic}}
+                        <!-- Seperation Line -->
+                        {{#Keyword}}
+                        <span id="keyword"> // {{Keyword}}</span>
+                        {{/Keyword}}
+                    </div>
+                    {{/Topic}}
+                </td>
+            </tr>
+        </table>
     </div>
 
     <div id="main-section" class="content">
-        <!-- Separation line -->
-        {{cloze:Cloze1}}
-        <!-- Separation line -->
-        {{cloze:Cloze2}}
-        <!-- Separation line -->
-        {{cloze:Cloze3}}
-        <!-- Separation line -->
-        {{cloze:Cloze4}}
-        <!-- Separation line -->
-        {{cloze:Cloze5}}
-        <!-- Separation line -->
-        {{cloze:Cloze6}}
-        <!-- Separation line -->
-        {{cloze:Cloze7}}
-        <!-- Separation line -->
-        {{cloze:Cloze8}}
-        <!-- Separation line -->
-        {{cloze:Cloze9}}
-        <!-- Separation line -->
-        {{cloze:Cloze10}}
-        <!-- Separation line -->
-        {{cloze:Cloze11}}
-        <!-- Separation line -->
-        {{cloze:Cloze12}}
-        <!-- Separation line -->
-        {{cloze:Cloze13}}
-        <!-- Separation line -->
-        {{cloze:Cloze14}}
-        <!-- Separation line -->
-        {{cloze:Cloze15}}
-        <!-- Separation line -->
-        {{cloze:Cloze16}}
-        <!-- Separation line -->
-        {{cloze:Cloze17}}
-        <!-- Separation line -->
-        {{cloze:Cloze18}}
-        <!-- Separation line -->
-        {{cloze:Cloze19}}
-        <!-- Separation line -->
-        {{cloze:Cloze20}}
+        {{cloze:Cloze1}} {{cloze:Cloze2}} {{cloze:Cloze3}} {{cloze:Cloze4}} {{cloze:Cloze5}} {{cloze:Cloze6}} {{cloze:Cloze7}} {{cloze:Cloze8}}
+        {{cloze:Cloze9}} {{cloze:Cloze10}} {{cloze:Cloze11}} {{cloze:Cloze12}} {{cloze:Cloze13}} {{cloze:Cloze14}} {{cloze:Cloze15}}
+        {{cloze:Cloze16}} {{cloze:Cloze17}} {{cloze:Cloze18}} {{cloze:Cloze19}} {{cloze:Cloze20}} {{cloze:Cloze21}} {{cloze:Cloze22}}
+        {{cloze:Cloze23}} {{cloze:Cloze24}} {{cloze:Cloze25}} {{cloze:Cloze26}} {{cloze:Cloze27}} {{cloze:Cloze28}} {{cloze:Cloze29}}
+        {{cloze:Cloze30}} {{cloze:Cloze31}} {{cloze:Cloze32}} {{cloze:Cloze33}} {{cloze:Cloze34}} {{cloze:Cloze35}} {{cloze:Cloze36}}
+        {{cloze:Cloze37}} {{cloze:Cloze38}} {{cloze:Cloze39}} {{cloze:Cloze40}} {{cloze:Cloze41}} {{cloze:Cloze42}} {{cloze:Cloze43}}
+        {{cloze:Cloze44}} {{cloze:Cloze45}} {{cloze:Cloze46}} {{cloze:Cloze47}} {{cloze:Cloze48}} {{cloze:Cloze49}} {{cloze:Cloze50}}
+        {{cloze:Cloze51}} {{cloze:Cloze52}} {{cloze:Cloze53}} {{cloze:Cloze54}} {{cloze:Cloze55}} {{cloze:Cloze56}} {{cloze:Cloze57}}
+        {{cloze:Cloze58}} {{cloze:Cloze59}} {{cloze:Cloze60}} {{cloze:Cloze61}} {{cloze:Cloze62}} {{cloze:Cloze63}} {{cloze:Cloze64}}
+        {{cloze:Cloze65}} {{cloze:Cloze66}} {{cloze:Cloze67}} {{cloze:Cloze68}} {{cloze:Cloze69}} {{cloze:Cloze70}} {{cloze:Cloze71}}
+        {{cloze:Cloze72}} {{cloze:Cloze73}} {{cloze:Cloze74}} {{cloze:Cloze75}} {{cloze:Cloze76}} {{cloze:Cloze77}} {{cloze:Cloze78}}
+        {{cloze:Cloze79}} {{cloze:Cloze80}} {{cloze:Cloze81}} {{cloze:Cloze82}} {{cloze:Cloze83}} {{cloze:Cloze84}} {{cloze:Cloze85}}
+        {{cloze:Cloze86}} {{cloze:Cloze87}} {{cloze:Cloze88}} {{cloze:Cloze89}} {{cloze:Cloze90}} {{cloze:Cloze91}} {{cloze:Cloze92}}
+        {{cloze:Cloze93}} {{cloze:Cloze94}} {{cloze:Cloze95}} {{cloze:Cloze96}} {{cloze:Cloze97}} {{cloze:Cloze98}} {{cloze:Cloze99}}
+        {{cloze:Cloze100}}
     </div>
+
     <br>
 
     <div id="info-section">
-        <div id="info-header" class="header header-blue" onclick="showNextElement(this)">
+        <div id="info-header" class="header header-blue">
             信息
         </div>
 
@@ -91,7 +85,7 @@
     <!-- Separation line -->
     {{#Source}}
     <div id="source-section">
-        <div id="source-header" class="header header-green" onclick="showNextElement(this)">
+        <div id="source-header" class="header header-green">
             来源
         </div>
         <div id="source" class="content" style="display:none">
@@ -103,7 +97,7 @@
     <!-- Separation line -->
     {{#Extra}}
     <div id="extra-section">
-        <div id="extra-header" class="header header-yellow" onclick="showNextElement(this)">
+        <div id="extra-header" class="header header-yellow">
             补充
         </div>
         <div id="extra" class="content" style="display:none">
@@ -112,9 +106,22 @@
     </div>
     <br> {{/Extra}}
 
+    <div id="editor-section">
+        <div id="editor-header">
+            <img src="_ui_handle.png" class="img-no-border">
+            <select id="lang-selector"> </select>
+        </div>
+        <div id="editor">
+            <iframe id="editor-framework" frameborder="1"></iframe>
+        </div>
+    </div>
+
+
     <div id="functional-elements">
         <div id="show-one-cloze-left"></div>
         <div id="show-one-cloze-right"></div>
+        <div id="show-one-pseudo-cloze-left"></div>
+        <div id="show-one-pseudo-cloze-right"></div>
         <div id="no-more-cloze"></div>
         <div id="show-all-pseudo-clozes"></div>
         <div style="display:none">
@@ -123,21 +130,21 @@
     </div>
 </div>
 
-<script src="_jquery-3.2.1.min.js"></script>
-<script src="_jquery.hotkeys.js"></script>
-<script src="_Autolinker.min.js"></script>
-<script src="_jquery.visible.min.js"></script>
+<script src="_js_jquery-3.2.1.min.js"></script>
+<script src="_js_jquery.hotkeys.js"></script>
+<script src="_js_Autolinker.min.js"></script>
+<script src="_js_jquery.visible.min.js"></script>
+<script src="_js_jquery-ui.min.js"></script>
 
 <script>
     var indexOfGenuineClozeToShow = 0;
     var genuineClozeTotalNumber = $('.genuine-cloze').length;
+    var indexOfPseudoClozeToShow = 0;
+    var pseudoClozeTotalNumber = $('.pseudo-cloze').length;
+    var editorInMain;
+    var customLang;
 
     $(function () {
-        // HIDE TOPIC 
-        if ($('#topic').text().lastIndexOf('#')) {
-            $('#topic').hide(0)
-        }
-
         // INITIALIZE CLOZES
         //      genuine clozes refer to those belong to current card and need to be answered, e.g. {{c2::abc}} on card2 
         //      pseudo clozes refer to the opposite, e.g. {{c1::abc}} and {{c3::abc}} on card2 
@@ -145,11 +152,29 @@
             toggleCloze(elem, 'hint')
         });
 
+
+        // HIDE TOPIC 
+        if ($('#topic').text().lastIndexOf('#')) {
+            $('#topic').hide(0)
+        }
+
+
+        // SET DOMAIN ICONS
+        setDomainIcon();
+
+
+        // ADD SWITCH FOR HIDDEN NOTE 
+        if ($('#note').text().match(/\S/g)) {
+            $('#note').before('<div id="note-switch"><hr>Show<hr></div>')
+        }
+
+
         // SHORTEN TAGS
         //      leaving only the last part if hierarchical tags are used, i.e. tag1::tag2::tag3 -> tag3
-        $('#tags span').each(function (index, elem) {
-            $(elem).text($(elem).text().replace(/[^:\s]+::/g, ''));
+        $('#tags').each(function (index, elem) {
+            $(elem).text($(elem).text().replace(/\S+::/g, ''));
         });
+
 
         // GENERATE LINK
         //      turn url-like plain text into clickable link
@@ -164,14 +189,13 @@
             })
         });
 
-        // ADD SWITCH FOR HIDDEN NOTE 
-        if ($('#note').text().match(/\S/g)) {
-            $('#note').before('<div id="note-switch" onclick="showNextElement(this)">-- Click to show --</div>')
-        }
-
         // SCROLL TO FIRST CLOZE
         if (genuineClozeTotalNumber) {
-            scrollToCloze($('.genuine-cloze').first().get(0));
+            var $firstGenuineClozeElem = $('.genuine-cloze').first();
+            if ($firstGenuineClozeElem.parents('#note')) {
+                $('#note').show();
+            }
+            scrollToCloze($firstGenuineClozeElem.get(0))
         }
 
         // SETUP KEY BINDING
@@ -180,8 +204,13 @@
         })
 
         $(document).bind('keyup', ',', function () {
+            showOneCloze('pseudo');
+        })
+
+        $(document).bind('keyup', '.', function () {
             showAllPseudoClozes();
         })
+
 
         // SETUP CLOZE CLICK EVENT
         $('.genuine-cloze, .pseudo-cloze').click(function () {
@@ -192,42 +221,164 @@
             showOneCloze();
         });
 
+        $('#show-one-pseudo-cloze-left, #show-one-pseudo-cloze-right').click(function () {
+            showOneCloze('pseudo');
+        });
+
         $('#show-all-pseudo-clozes').click(function () {
             showAllPseudoClozes();
         })
 
+
+        // SETUP DOMAIN ICON CLICK EVENT
+        $('#domain-icon').click(function (event) {
+            if (!editorInMain) {
+                $('#editor-framework').attr('src', '_js_editor.html')
+                $('#editor-framework').on('load', function () {
+                    editorInMain = document.getElementById('editor-framework').contentWindow.editor;
+                    $('#editor-section').draggable();
+                    initLangSelector();
+                    $('#lang-selector').change(function (event) {
+                        customLang = this.value;
+                        editorInMain.session.setMode('ace/mode/' + customLang)
+                    })
+                    showEditor(event)
+                })
+            } else {
+                showEditor(event)
+            }
+        })
+
+
+        // SETUP HEADER CLICK EVENT
+        var headerIds = ['info-header', 'source-header', 'extra-header', 'note-switch'];
+        for (var index in headerIds) {
+            var elem;
+            if (elem = document.getElementById(headerIds[index])) {
+                elem.addEventListener('click', function () {
+                    toggleNextElement(this);
+                })
+            }
+        }
     });
+
+    function setDomainIcon() {
+        var domainText = $('#domain').text()
+        var domainTextSubwords = domainText.match(/\w+/g)
+        if (domainTextSubwords !== null) {
+            domainTextSubwords.forEach(function (domain) {
+                var imgSrc = '_domain_' + domain.toLowerCase() + '.png';
+                addDomainIcon(imgSrc, domain)
+            })
+        }
+
+        var chineseDomains = {
+            '佛教': 'buddist',
+            '多语言': 'multi-lang',
+        }
+        for (var chinese in chineseDomains) {
+            var regex = new RegExp(chinese);
+            if ($('#domain').text().search(regex) !== -1) {
+                var domain = chineseDomains[chinese]
+                var imgSrc = '_domain_' + domain.toLowerCase() + '.png';
+                addDomainIcon(imgSrc, chinese)
+            }
+        }
+        if ($('#domain-icon img').length === 0) {
+            addDomainIcon('_domain_void.png', '')
+        }
+    }
+
+    function addDomainIcon(imgSrc, title) {
+        $.ajax({
+            url: imgSrc,
+            async: false,
+            success: function () {
+                var imgElem = document.createElement('img');
+                imgElem.src = imgSrc
+                imgElem.title = title
+                imgElem.setAttribute('class', 'img-no-border')
+                $('#domain-icon').append(imgElem)
+            }
+        });
+    }
+
+    function showEditor(event) {
+        // var currentLang = editorInMain.session.getMode()['$id'].replace(/.*\//, '')
+        var lang = event.target.title.toLowerCase()
+        if (lang === 'jquery') {
+            lang = 'javascript';
+        }
+        if (customLang) {
+            lang = customLang
+        }
+        editorInMain.session.setMode('ace/mode/' + lang)
+        $('#editor-section').toggle(0);
+    }
+
+    function initLangSelector() {
+        var langSelectorList = ['HTML', 'CSS', 'Javascript', 'Java', 'Python', 'Text'].sort()
+        for (var index in langSelectorList) {
+            var lang = langSelectorList[index];
+            var optElem = document.createElement('option');
+            optElem.value = lang.toLocaleLowerCase();
+            optElem.textContent = lang;
+            document.getElementById('lang-selector').appendChild(optElem)
+        }
+    }
 
     function scrollToCloze(elem) {
         $('html, body').animate({
-            scrollTop: $(elem).offset().top - 100
+            scrollTop: $(elem).offset().top - 150
         }, 500);
     }
 
-    function showOneCloze() {
-        if (indexOfGenuineClozeToShow >= genuineClozeTotalNumber) {
-            $('#no-more-cloze').animate({
-                display: "toggle",
-            }, 500);
+    function showOneCloze(mode) {
+        if (mode !== 'pseudo') {
+            if (indexOfGenuineClozeToShow >= genuineClozeTotalNumber) {
+                $('#no-more-cloze').css('background-color', '#db4437');
+                $('#no-more-cloze').animate({
+                    display: "toggle",
+                }, 500);
+            } else {
+                $('.genuine-cloze[index=' + indexOfGenuineClozeToShow + ']').each(function (index, elem) {
+                    showCloze(index, elem);
+                })
+            }
         } else {
-            $('.genuine-cloze[index=' + indexOfGenuineClozeToShow + ']').each(function (index, elem) {
-                if ($(elem).parents('#note:hidden').length) {
-                    $("#note").show(0);
-                    scrollToCloze($('#note')); // scroll to the top of note
+            if (indexOfPseudoClozeToShow >= pseudoClozeTotalNumber) {
+                $('#no-more-cloze').css('background-color', '#4285f4');
+                $('#no-more-cloze').animate({
+                    display: "toggle",
+                }, 500);
+            } else {
+                $('.pseudo-cloze[index=' + indexOfPseudoClozeToShow + ']').each(function (index, elem) {
+                    showCloze(index, elem);
+                })
+            }
+        }
+
+        function showCloze(index, elem) {
+            if ($(elem).parents('#note:hidden').length) {
+                $("#note").show(0);
+                scrollToCloze(elem)
+            } else {
+                if (!$(elem).visible()) {
+                    scrollToCloze(elem);
                 } else {
+                    toggleCloze(elem, 'answer');
                     if (!$(elem).visible()) {
                         scrollToCloze(elem);
-                    } else {
-                        toggleCloze(elem, 'answer');
-                        if (!$(elem).visible()) {
-                            scrollToCloze(elem);
-                        }
-                        $(elem).hide(0);
-                        $(elem).fadeIn(500);
+                    }
+                    $(elem).hide(0);
+                    $(elem).fadeIn(500);
+                    if ($(elem).hasClass('genuine-cloze')) {
                         indexOfGenuineClozeToShow++;
+                    } else {
+                        indexOfPseudoClozeToShow++;
                     }
                 }
-            })
+            }
         }
     }
 
@@ -248,7 +399,7 @@
             answer = $('#pseudo-cloze-answer-' + index).html();
             hint = $('#pseudo-cloze-hint-' + index).html();
         }
-        hint = '&nbsp;&nbsp;[&nbsp;&nbsp;' + hint + '&nbsp;&nbsp;]&nbsp;&nbsp;';
+        hint = '&nbsp;[&nbsp;' + hint + '&nbsp;]&nbsp;';
 
         if (displayOption == 'answer') {
             $(elem).attr('show-state', 'answer');
@@ -267,7 +418,7 @@
         };
     }
 
-    function showNextElement(elem) {
-        $(elem).next().show(0);
+    function toggleNextElement(elem) {
+        $(elem).next().toggle(0);
     };
 </script>

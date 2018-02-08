@@ -2,7 +2,7 @@
 
 @font-face {
     font-family: 'font-main';
-    src: url('_msyh.ttc');
+    src: url('_msyh.tt');
     font-weight: normal;
     font-style: normal;
 }
@@ -14,43 +14,50 @@
     font-style: normal;
 }
 
-
 /* ------------Style------------- */
 
 #card-body {
     font: 16px/1.6em 'font-main', sans-serif;
     margin-top: 4.5em;
-    margin-bottom: 100px;
+    margin-bottom: 1000px;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.content {
+.content,
+.header {
     padding-left: 0.5em;
     border-left: 4px solid transparent;
 }
 
 .header {
     font: bold 16px/1.6em 'font-mono', monospace;
-    padding-left: 0.5em;
 }
 
 .header-red {
-    border-left: 4px solid #db4437;
+    border-color: #db4437;
     color: #db4437;
 }
 
 .header-green {
-    border-left: 4px solid #0f9d58;
+    border-color: #0f9d58;
     color: #0f9d58;
 }
 
 .header-blue {
-    border-left: 4px solid #4285f4;
+    border-color: #4285f4;
     color: #4285f4;
 }
 
 .header-yellow {
-    border-left: 4px solid #f4b400;
+    border-color: #f4b400;
     color: #f4b400;
+}
+
+.genuine-cloze[show-state="hint"],
+.pseudo-cloze[show-state="hint"] {
+    font-family: 'font-mono';
 }
 
 .genuine-cloze {
@@ -59,7 +66,6 @@
 }
 
 .genuine-cloze[show-state="hint"] {
-    border-bottom: 1px solid #db4437;
     background-color: #ffd6d4;
 }
 
@@ -69,20 +75,41 @@
 }
 
 .pseudo-cloze[show-state="hint"] {
-    border-bottom: 1px solid #4285f4;
     background-color: #dce8ff;
 }
 
 #topic-section {
     width: 100%;
-    z-index: 9;
+    z-index: 90;
     background-color: white;
     position: fixed;
     top: 0;
 }
 
-#info-section {
-    font-family: 'font-mono', monospace;
+#topic-section table {
+    margin: 0;
+}
+
+#topic-section td,
+#topic-section th {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-width: initial;
+}
+
+#keyword {
+    color: #aaa;
+}
+
+#domain-icon {
+    padding-right: 5px;
+}
+
+#domain-icon img {
+    height: 50px;
+    width: 50px;
+    vertical-align: middle;
 }
 
 #note {
@@ -96,15 +123,25 @@
     margin-bottom: 1em;
 }
 
+#info-section {
+    font-family: 'font-mono', monospace;
+}
+
 #show-one-cloze-left,
 #show-one-cloze-right,
+#show-one-pseudo-cloze-left,
+#show-one-pseudo-cloze-right,
 #no-more-cloze {
-    height: 100%;
-    width: 30px;
     position: fixed;
     z-index: 9;
-    top: 0;
     background-color: transparent;
+}
+
+#show-one-cloze-left,
+#show-one-cloze-right {
+    top: 0;
+    height: 50%;
+    width: 30px;
 }
 
 #show-one-cloze-left {
@@ -115,7 +152,24 @@
     right: 0;
 }
 
+#show-one-pseudo-cloze-left,
+#show-one-pseudo-cloze-right {
+    top: 50%;
+    height: 50%;
+    width: 30px;
+}
+
+#show-one-pseudo-cloze-left {
+    left: 0;
+}
+
+#show-one-pseudo-cloze-right {
+    right: 0;
+}
+
 #no-more-cloze {
+    top: 0;
+    height: 100%;
     width: 10px;
     background-color: #db4437;
     left: 0;
@@ -130,12 +184,36 @@
     top: 0;
     left: 0;
     background-color: transparent;
+    display: none;
+}
+
+#editor-section {
+    z-index: 99;
+    position: fixed;
+    top: 150px;
+    left: 10%;
+    display: none;
+    width: 800px;
+    height: 500px;
+}
+
+#editor-header>img {
+    vertical-align: middle;
+}
+
+#editor-framework {
+    width: 100%;
+    height: 100%;
 }
 
 u {
     background-color: #dbffed;
-    border-bottom: 2px solid #0f9d58;
+    border-bottom: 1px solid #0f9d58;
     text-decoration: none;
+}
+
+i {
+    padding-right: 0.5em;
 }
 
 a {
@@ -143,14 +221,21 @@ a {
     word-wrap: break-word;
 }
 
+img {
+    padding: 5px;
+    border: 2px dashed skyblue;
+}
+
+img.img-no-border {
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
+
 .mobile ol,
 .mobile ul,
 .mobile li {
     margin-left: -0.5em;
-}
-
-.mobile li {
-    margin: 0.1em, inherit;
 }
 
 table {
@@ -168,6 +253,7 @@ td,
 th {
     border: 1px solid #0f9d58;
     padding: 0.3em 0.5em;
+    min-width: 5em;
 }
 
 hr {
@@ -182,6 +268,7 @@ pre {
     border-left: 2px solid #0f9d58;
     padding-left: 10px;
     line-height: 1.4;
+    margin: 4px;
 }
 
 code,
@@ -193,516 +280,454 @@ tt {
     background-color: #fdf3d6;
 }
 
-
 /* Pygments colorful */
 
-.highlight .hll {
+.pyg-hll {
     background-color: #ffffcc
 }
 
-.highlight {
-    background: #ffffff;
-}
-
-.highlight .c {
+.pyg-c {
     color: #888888
 }
 
-
 /* Comment */
 
-.highlight .err {
+.pyg-err {
     color: #FF0000;
     background-color: #FFAAAA
 }
 
-
 /* Error */
 
-.highlight .k {
+.pyg-k {
     color: #008800;
     font-weight: bold
 }
 
-
 /* Keyword */
 
-.highlight .o {
+.pyg-o {
     color: #333333
 }
 
-
 /* Operator */
 
-.highlight .ch {
+.pyg-ch {
     color: #888888
 }
-
 
 /* Comment.Hashbang */
 
-.highlight .cm {
+.pyg-cm {
     color: #888888
 }
-
 
 /* Comment.Multiline */
 
-.highlight .cp {
+.pyg-cp {
     color: #557799
 }
 
-
 /* Comment.Preproc */
 
-.highlight .cpf {
+.pyg-cpf {
     color: #888888
 }
-
 
 /* Comment.PreprocFile */
 
-.highlight .c1 {
+.pyg-c1 {
     color: #888888
 }
 
-
 /* Comment.Single */
 
-.highlight .cs {
+.pyg-cs {
     color: #cc0000;
     font-weight: bold
 }
 
-
 /* Comment.Special */
 
-.highlight .gd {
+.pyg-gd {
     color: #A00000
 }
 
-
 /* Generic.Deleted */
 
-.highlight .ge {
+.pyg-ge {
     font-style: italic
 }
 
-
 /* Generic.Emph */
 
-.highlight .gr {
+.pyg-gr {
     color: #FF0000
 }
 
-
 /* Generic.Error */
 
-.highlight .gh {
+.pyg-gh {
     color: #000080;
     font-weight: bold
 }
 
-
 /* Generic.Heading */
 
-.highlight .gi {
+.pyg-gi {
     color: #00A000
 }
 
-
 /* Generic.Inserted */
 
-.highlight .go {
+.pyg-go {
     color: #888888
 }
 
-
 /* Generic.Output */
 
-.highlight .gp {
+.pyg-gp {
     color: #c65d09;
     font-weight: bold
 }
 
-
 /* Generic.Prompt */
 
-.highlight .gs {
+.pyg-gs {
     font-weight: bold
 }
 
-
 /* Generic.Strong */
 
-.highlight .gu {
+.pyg-gu {
     color: #800080;
     font-weight: bold
 }
 
-
 /* Generic.Subheading */
 
-.highlight .gt {
+.pyg-gt {
     color: #0044DD
 }
 
-
 /* Generic.Traceback */
 
-.highlight .kc {
+.pyg-kc {
     color: #008800;
     font-weight: bold
 }
-
 
 /* Keyword.Constant */
 
-.highlight .kd {
+.pyg-kd {
     color: #008800;
     font-weight: bold
 }
-
 
 /* Keyword.Declaration */
 
-.highlight .kn {
+.pyg-kn {
     color: #008800;
     font-weight: bold
 }
 
-
 /* Keyword.Namespace */
 
-.highlight .kp {
+.pyg-kp {
     color: #003388;
     font-weight: bold
 }
 
-
 /* Keyword.Pseudo */
 
-.highlight .kr {
+.pyg-kr {
     color: #008800;
     font-weight: bold
 }
 
-
 /* Keyword.Reserved */
 
-.highlight .kt {
+.pyg-kt {
     color: #333399;
     font-weight: bold
 }
 
-
 /* Keyword.Type */
 
-.highlight .m {
+.pyg-m {
     color: #6600EE;
     font-weight: bold
 }
 
-
 /* Literal.Number */
 
-.highlight .s {
+.pyg-s {
     background-color: #fff0f0
 }
 
-
 /* Literal.String */
 
-.highlight .na {
+.pyg-na {
     color: #0000CC
 }
 
-
 /* Name.Attribute */
 
-.highlight .nb {
+.pyg-nb {
     color: #007020
 }
 
-
 /* Name.Builtin */
 
-.highlight .nc {
+.pyg-nc {
     color: #BB0066;
     font-weight: bold
 }
 
-
 /* Name.Class */
 
-.highlight .no {
+.pyg-no {
     color: #003366;
     font-weight: bold
 }
 
-
 /* Name.Constant */
 
-.highlight .nd {
+.pyg-nd {
     color: #555555;
     font-weight: bold
 }
 
-
 /* Name.Decorator */
 
-.highlight .ni {
+.pyg-ni {
     color: #880000;
     font-weight: bold
 }
 
-
 /* Name.Entity */
 
-.highlight .ne {
+.pyg-ne {
     color: #FF0000;
     font-weight: bold
 }
 
-
 /* Name.Exception */
 
-.highlight .nf {
+.pyg-nf {
     color: #0066BB;
     font-weight: bold
 }
 
-
 /* Name.Function */
 
-.highlight .nl {
+.pyg-nl {
     color: #997700;
     font-weight: bold
 }
 
-
 /* Name.Label */
 
-.highlight .nn {
+.pyg-nn {
     color: #0e84b5;
     font-weight: bold
 }
 
-
 /* Name.Namespace */
 
-.highlight .nt {
+.pyg-nt {
     color: #007700
 }
 
-
 /* Name.Tag */
 
-.highlight .nv {
+.pyg-nv {
     color: #996633
 }
 
-
 /* Name.Variable */
 
-.highlight .ow {
+.pyg-ow {
     color: #000000;
     font-weight: bold
 }
 
-
 /* Operator.Word */
 
-.highlight .w {
+.pyg-w {
     color: #bbbbbb
 }
 
-
 /* Text.Whitespace */
 
-.highlight .mb {
+.pyg-mb {
     color: #6600EE;
     font-weight: bold
 }
-
 
 /* Literal.Number.Bin */
 
-.highlight .mf {
+.pyg-mf {
     color: #6600EE;
     font-weight: bold
 }
 
-
 /* Literal.Number.Float */
 
-.highlight .mh {
+.pyg-mh {
     color: #005588;
     font-weight: bold
 }
 
-
 /* Literal.Number.Hex */
 
-.highlight .mi {
+.pyg-mi {
     color: #0000DD;
     font-weight: bold
 }
 
-
 /* Literal.Number.Integer */
 
-.highlight .mo {
+.pyg-mo {
     color: #4400EE;
     font-weight: bold
 }
 
-
 /* Literal.Number.Oct */
 
-.highlight .sa {
+.pyg-sa {
     background-color: #fff0f0
 }
-
 
 /* Literal.String.Affix */
 
-.highlight .sb {
+.pyg-sb {
     background-color: #fff0f0
 }
-
 
 /* Literal.String.Backtick */
 
-.highlight .sc {
+.pyg-sc {
     color: #0044DD
 }
 
-
 /* Literal.String.Char */
 
-.highlight .dl {
+.pyg-dl {
     background-color: #fff0f0
 }
-
 
 /* Literal.String.Delimiter */
 
-.highlight .sd {
+.pyg-sd {
     color: #DD4422
 }
 
-
 /* Literal.String.Doc */
 
-.highlight .s2 {
+.pyg-s2 {
     background-color: #fff0f0
 }
 
-
 /* Literal.String.Double */
 
-.highlight .se {
+.pyg-se {
     color: #666666;
     font-weight: bold;
     background-color: #fff0f0
 }
 
-
 /* Literal.String.Escape */
 
-.highlight .sh {
+.pyg-sh {
     background-color: #fff0f0
 }
 
-
 /* Literal.String.Heredoc */
 
-.highlight .si {
+.pyg-si {
     background-color: #eeeeee
 }
 
-
 /* Literal.String.Interpol */
 
-.highlight .sx {
+.pyg-sx {
     color: #DD2200;
     background-color: #fff0f0
 }
 
-
 /* Literal.String.Other */
 
-.highlight .sr {
+.pyg-sr {
     color: #000000;
     background-color: #fff0ff
 }
 
-
 /* Literal.String.Regex */
 
-.highlight .s1 {
+.pyg-s1 {
     background-color: #fff0f0
 }
 
-
 /* Literal.String.Single */
 
-.highlight .ss {
+.pyg-ss {
     color: #AA6600
 }
 
-
 /* Literal.String.Symbol */
 
-.highlight .bp {
+.pyg-bp {
     color: #007020
 }
 
-
 /* Name.Builtin.Pseudo */
 
-.highlight .fm {
+.pyg-fm {
     color: #0066BB;
     font-weight: bold
 }
 
-
 /* Name.Function.Magic */
 
-.highlight .vc {
+.pyg-vc {
     color: #336699
 }
 
-
 /* Name.Variable.Class */
 
-.highlight .vg {
+.pyg-vg {
     color: #dd7700;
     font-weight: bold
 }
 
-
 /* Name.Variable.Global */
 
-.highlight .vi {
+.pyg-vi {
     color: #3333BB
 }
 
-
 /* Name.Variable.Instance */
 
-.highlight .vm {
+.pyg-vm {
     color: #996633
 }
 
-
 /* Name.Variable.Magic */
 
-.highlight .il {
+.pyg-il {
     color: #0000DD;
     font-weight: bold
 }
 
+/* Literal.Number.Integer.Long */
+
+.pyg-nx {
+    color: #000080;
+}
 
 /* Literal.Number.Integer.Long */
+
+.pyg-nx {
+    color: #000080;
+}
