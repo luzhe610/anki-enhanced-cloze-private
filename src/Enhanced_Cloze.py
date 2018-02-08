@@ -2,6 +2,7 @@
 
 import re
 
+import aqt
 from aqt import mw
 from aqt.utils import showInfo
 from aqt.addcards import AddCards
@@ -24,7 +25,7 @@ MODEL_NAME = "Enhanced Cloze"
 CONTENT_FIELD_NAME = "# Content"
 NOTE_FIELD_NAME = "Note"
 IN_USE_CLOZES_FIELD_NAME = "In-use Clozes"
-UPDATE_ENHANCED_CLOZE_SHORTCUT = "Ctrl+Alt+C"
+UPDATE_ENHANCED_CLOZE_SHORTCUT = "Ctrl+Alt+Shift+C"
 MAX_CLOZE_FIELD_NUMBER = 100
 
 
@@ -195,6 +196,11 @@ def update_all_enhanced_clozes_in_browser(self, evt=None):
     mw.reset()
 
 
+def update_all_enhanced_clozes_in_main_window():
+    update_all_enhanced_cloze(aqt)
+    aqt.mw.reset()
+
+
 def update_all_enhanced_cloze(self):
     mw = self.mw
     nids = mw.col.findNotes("*")
@@ -212,20 +218,27 @@ def update_all_enhanced_cloze(self):
 
         generate_enhanced_cloze(note)
         note.flush()
+    tooltip('Update Enhanced Clozed Finished')
 
 
-def setup_menu(self):
-    browser = self
+def setup_menu_in_browser(self):
+    setup_menu(self)
+
+
+def setup_menu(window):
     try:
-        menu = browser.menuUtilities
+        menu = window.form.menuUtilities
     except:
-        browser.menuUtilities = QMenu("Utilites", browser.form.menubar)
-        menu = browser.menuUtilities
-    browser.form.menubar.addMenu(menu)
-    a = menu.addAction('Update Enhanced Clozes')
+        window.form.menuUtilities = QMenu("&Utilites", window.form.menubar)
+        menu = window.form.menuUtilities
+        window.form.menubar.addMenu(menu)
+    a = menu.addAction('&Update Enhanced Clozes')
     a.setShortcut(QKeySequence(UPDATE_ENHANCED_CLOZE_SHORTCUT))
-    a.triggered.connect(
-        lambda _, b=browser: update_all_enhanced_clozes_in_browser(b))
+    if window == aqt.mw:
+        a.triggered.connect(update_all_enhanced_clozes_in_main_window)
+    else:
+        a.triggered.connect(
+            lambda _, b=window: update_all_enhanced_clozes_in_browser(b))
 
 
 def on_save_now(self, callback=None):
@@ -254,25 +267,26 @@ def remove_style_of_string(string):
 def add_cloze_style_tag_of_note(note):
     note[CONTENT_FIELD_NAME] = add_cloze_style_tag_of_string(
         note[CONTENT_FIELD_NAME])
-    note[NOTE_FIELD_NAME] = add_cloze_style_tag_of_string(note[NOTE_FIELD_NAME])
+    note[NOTE_FIELD_NAME] = add_cloze_style_tag_of_string(
+        note[NOTE_FIELD_NAME])
 
 
 def add_cloze_style_tag_of_string(string):
     string = re.sub(
-        r"(\{\{c\d+::)(?!<span class=\"cloze-in-editor\">)([\s\S]*?)(\}\})", "\g<1><span class=\"cloze-in-editor\">\g<2></span>\g<3>", string)
+        r'(?<!<span class="cloze-in-editor">)(\{\{c\d+::)([\s\S]*?)\}\}', '<span class="cloze-in-editor">\g<1>\g<2>}}</span>', string)
     return string
 
 
 def remove_cloze_style_tag(string):
     string = re.sub(
-        r"(\{\{c\d+::)<span class=\"cloze-in-editor\">([\s\S]*?)(</span>)(\}\})", "\g<1>\g<2>\g<4>", string)
+        r'<span class="cloze-in-editor">(\{\{c\d+::)([\s\S]*?)\}\}</span>', '\g<1>\g<2>}}', string)
     return string
 
 
 def setup_buttons(self):
     self._addButton(
-        "Remove Style", lambda: self.process_note_in_editor(),
-        text="X", tip="Remove Style", key="Ctrl+Shift+R"
+        "Reset Style", lambda: self.process_note_in_editor(),
+        text="R", tip="Reset Style", key="Ctrl+Shift+R"
     )
 
 
@@ -282,7 +296,8 @@ EditCurrent.onSave = wrap(EditCurrent.onSave, on_edit_current_save, "around")
 
 # Editor.saveNow = wrap(Editor.saveNow, on_save_now, "before")
 
-addHook("browser.setupMenus", setup_menu)
+setup_menu(aqt.mw)
+addHook("browser.setupMenus", setup_menu_in_browser)
 
 Editor.process_note_in_editor = process_note_in_editor
 Editor.setupButtons = wrap(Editor.setupButtons, setup_buttons)
