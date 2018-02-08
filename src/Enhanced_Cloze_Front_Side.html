@@ -192,9 +192,9 @@
         // SCROLL TO FIRST CLOZE
         if (genuineClozeTotalNumber) {
             var $firstGenuineClozeElem = $('.genuine-cloze').first();
-            if ($firstGenuineClozeElem.parents('#note')) {
-                $('#note').show();
-            }
+            // if ($firstGenuineClozeElem.parents('#note')) {
+            //     $('#note').show();
+            // }
             scrollToCloze($firstGenuineClozeElem.get(0))
         }
 
@@ -238,6 +238,8 @@
                     editorInMain = document.getElementById('editor-framework').contentWindow.editor;
                     $('#editor-section').draggable();
                     initLangSelector();
+                    $('#lang-selector option[value="' + event.target.title.toLowerCase() + '"]')
+                        .attr('selected', true)
                     $('#lang-selector').change(function (event) {
                         customLang = this.value;
                         editorInMain.session.setMode('ace/mode/' + customLang)
@@ -317,7 +319,7 @@
     }
 
     function initLangSelector() {
-        var langSelectorList = ['HTML', 'CSS', 'Javascript', 'Java', 'Python', 'Text'].sort()
+        var langSelectorList = ['HTML', 'CSS', 'Javascript', 'Java', 'Python', 'Text'].sort();
         for (var index in langSelectorList) {
             var lang = langSelectorList[index];
             var optElem = document.createElement('option');
@@ -329,7 +331,7 @@
 
     function scrollToCloze(elem) {
         $('html, body').animate({
-            scrollTop: $(elem).offset().top - 150
+            scrollTop: $(elem).offset().top - 200
         }, 500);
     }
 
