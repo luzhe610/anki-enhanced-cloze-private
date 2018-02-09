@@ -232,25 +232,38 @@
 
         // SETUP DOMAIN ICON CLICK EVENT
         $('#domain-icon').click(function (event) {
+            initAndToggleEditor(event)
+        })
+
+        $('#domain-icon').contextmenu(function (event) {
+            event.preventDefault();
+            initAndToggleEditor(event, 'Text')
+        })
+
+        function initAndToggleEditor(event, mode) {
             if (!editorInMain) {
                 $('#editor-framework').attr('src', '_js_editor.html')
                 $('#editor-framework').on('load', function () {
                     editorInMain = document.getElementById('editor-framework').contentWindow.editor;
                     $('#editor-section').draggable();
                     initLangSelector();
-                    $('#lang-selector option[value="' + event.target.title.toLowerCase() + '"]')
-                        .attr('selected', true)
-                    $('#lang-selector').change(function (event) {
-                        customLang = this.value;
-                        editorInMain.session.setMode('ace/mode/' + customLang)
-                    })
-                    showEditor(event)
+                    if (mode === 'Text') {
+                        $('#lang-selector option[value="' + 'text' + '"]').attr('selected',
+                            true)
+                    } else {
+                        $('#lang-selector option[value="' + event.target.title.toLowerCase() +
+                            '"]').attr('selected', true)
+                    }
+                    var selection;
+                    if (selection = window.getSelection()) {
+                        editorInMain.setValue(selection.toString())
+                    }
+                    toggleEditor(event)
                 })
             } else {
-                showEditor(event)
+                toggleEditor(event)
             }
-        })
-
+        }
 
         // SETUP HEADER CLICK EVENT
         var headerIds = ['info-header', 'source-header', 'extra-header', 'note-switch'];
@@ -305,7 +318,7 @@
         });
     }
 
-    function showEditor(event) {
+    function toggleEditor(event) {
         // var currentLang = editorInMain.session.getMode()['$id'].replace(/.*\//, '')
         var lang = event.target.title.toLowerCase()
         if (lang === 'jquery') {
@@ -327,6 +340,10 @@
             optElem.textContent = lang;
             document.getElementById('lang-selector').appendChild(optElem)
         }
+        $('#lang-selector').change(function (event) {
+            customLang = this.value;
+            editorInMain.session.setMode('ace/mode/' + customLang)
+        })
     }
 
     function scrollToCloze(elem) {
