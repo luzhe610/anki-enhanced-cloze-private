@@ -143,8 +143,15 @@
     var pseudoClozeTotalNumber = $('.pseudo-cloze').length;
     var editorInMain;
     var customLang;
+    var platform;
 
     $(function () {
+        if (document.querySelector('html.win')) {
+            platform = 'win';
+        } else if (document.querySelector('html.mobile')) {
+            platform = 'mobile';
+        }
+
         // INITIALIZE CLOZES
         //      genuine clozes refer to those belong to current card and need to be answered, e.g. {{c2::abc}} on card2 
         //      pseudo clozes refer to the opposite, e.g. {{c1::abc}} and {{c3::abc}} on card2 
@@ -178,16 +185,16 @@
 
         // GENERATE LINK
         //      turn url-like plain text into clickable link
-        $('#card-body').html(function (index, oldhtml) {
-            return Autolinker.link(oldhtml, {
-                phone: false,
-                truncate: {
-                    length: 100,
-                    location: 'smart'
-                },
-                stripPrefix: false,
-            })
-        });
+        // $('#card-body').html(function (index, oldhtml) {
+        //     return Autolinker.link(oldhtml, {
+        //         phone: false,
+        //         truncate: {
+        //             length: 100,
+        //             location: 'smart'
+        //         },
+        //         stripPrefix: false,
+        //     })
+        // });
 
         // SCROLL TO FIRST CLOZE
         if (genuineClozeTotalNumber) {
@@ -232,12 +239,16 @@
 
         // SETUP DOMAIN ICON CLICK EVENT
         $('#domain-icon').click(function (event) {
-            initAndToggleEditor(event)
+            if (platform === 'win') {
+                initAndToggleEditor(event)
+            }
         })
 
         $('#domain-icon').contextmenu(function (event) {
             event.preventDefault();
-            initAndToggleEditor(event, 'Text')
+            if (platform === 'win') {
+                initAndToggleEditor(event, 'Text')
+            }
         })
 
         function initAndToggleEditor(event, mode) {
@@ -275,15 +286,20 @@
                 })
             }
         }
+        $('#domain-icon').effect('pulsate');
     });
 
     function setDomainIcon() {
+        var englishNormalDomains = ['Anki', 'Android', 'JavaScript', 'Vim', 'Todoist', 'CMD', 'jQuery', 'CSS', 'HTML',
+            'Python', 'Java'
+        ];
         var domainText = $('#domain').text()
         var domainTextSubwords = domainText.match(/\w+/g)
-        if (domainTextSubwords !== null) {
+        if (domainTextSubwords.length > 0) {
             domainTextSubwords.forEach(function (domain) {
-                var imgSrc = '_domain_' + domain.toLowerCase() + '.png';
-                addDomainIcon(imgSrc, domain)
+                if (englishNormalDomains.indexOf(domain) !== -1) {
+                    addDomainIcon(domain)
+                }
             })
         }
 
@@ -292,30 +308,25 @@
             '多语言': 'multi-lang',
         }
         for (var chinese in chineseDomains) {
-            var regex = new RegExp(chinese);
-            if ($('#domain').text().search(regex) !== -1) {
+            if ($('#domain').text().search(chinese) !== -1) {
                 var domain = chineseDomains[chinese]
-                var imgSrc = '_domain_' + domain.toLowerCase() + '.png';
-                addDomainIcon(imgSrc, chinese)
+                addDomainIcon(domain, chinese)
             }
         }
+
         if ($('#domain-icon img').length === 0) {
             addDomainIcon('_domain_void.png', '')
         }
     }
 
-    function addDomainIcon(imgSrc, title) {
-        $.ajax({
-            url: imgSrc,
-            async: false,
-            success: function () {
-                var imgElem = document.createElement('img');
-                imgElem.src = imgSrc
-                imgElem.title = title
-                imgElem.setAttribute('class', 'img-no-border')
-                $('#domain-icon').append(imgElem)
-            }
-        });
+    function addDomainIcon(domain, title) {
+        var title = (title) ? title : domain;
+        var imgSrc = '_domain_' + domain.toLowerCase() + '.png';
+        var imgElem = document.createElement('img');
+        imgElem.src = imgSrc
+        imgElem.title = title
+        imgElem.setAttribute('class', 'img-no-border')
+        $('#domain-icon').append(imgElem)
     }
 
     function toggleEditor(event) {
@@ -332,7 +343,7 @@
     }
 
     function initLangSelector() {
-        var langSelectorList = ['HTML', 'CSS', 'Javascript', 'Java', 'Python', 'Text'].sort();
+        var langSelectorList = ['Text'].concat(['HTML', 'CSS', 'Javascript', 'Java', 'Python'].sort());
         for (var index in langSelectorList) {
             var lang = langSelectorList[index];
             var optElem = document.createElement('option');
