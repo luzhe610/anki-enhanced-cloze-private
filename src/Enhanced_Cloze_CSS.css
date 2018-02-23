@@ -78,7 +78,7 @@
     background-color: #dce8ff;
 }
 
-#topic-section {
+.topic-section {
     width: 100%;
     z-index: 90;
     background-color: white;
@@ -86,16 +86,28 @@
     top: 0;
 }
 
-#topic-section table {
+.topic-section table {
     margin: 0;
 }
 
-#topic-section td,
-#topic-section th {
+.topic-section td,
+.topic-section th {
     border: 0;
     margin: 0;
     padding: 0;
     min-width: initial;
+}
+
+#topic-section-mobile #topic {
+    margin-left: 1em;
+}
+
+.win #topic-section-mobile {
+    display: none;
+}
+
+.mobile #topic-section-win {
+    display: none;
 }
 
 #keyword {
