@@ -283,10 +283,24 @@ def remove_cloze_style_tag(string):
     return string
 
 
+def empty_generated_fields(self):
+    note = self.note
+    if not note or not check_model(note.model()):
+        return
+    for i_cloze_field_number in range(1, MAX_CLOZE_FIELD_NUMBER + 1):
+        dest_field_name = "Cloze%s" % i_cloze_field_number
+        note[dest_field_name] = ""
+    self.mw.progress.timer(100, self.loadNote, False)
+
+
 def setup_buttons(self):
     self._addButton(
         "Reset Style", lambda: self.process_note_in_editor(),
         text="R", tip="Reset Style", key="Ctrl+Shift+R"
+    )
+    self._addButton(
+        "Empty Fiels", lambda: self.empty_generated_fields(),
+        text="X", tip="Empty Fiels", key=""
     )
 
 
@@ -300,4 +314,5 @@ setup_menu(aqt.mw)
 addHook("browser.setupMenus", setup_menu_in_browser)
 
 Editor.process_note_in_editor = process_note_in_editor
+Editor.empty_generated_fields = empty_generated_fields
 Editor.setupButtons = wrap(Editor.setupButtons, setup_buttons)

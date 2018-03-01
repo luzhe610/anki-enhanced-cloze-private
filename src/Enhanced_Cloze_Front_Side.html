@@ -28,26 +28,18 @@
         </table>
     </div>
     <div id="topic-section-mobile" class="header header-red topic-section">
-        <table>
-            <tr>
-                <td>
-                    {{#Domain}}
-                    <div id="domain">@ {{Domain}}
-                    </div>
-                    {{/Domain}}
-                </td>
-                <td>
-                    {{#Topic}}
-                    <div id="topic"># {{Topic}}
-                        <!-- Seperation Line -->
-                        {{#Keyword}}
-                        <span id="keyword"> // {{Keyword}}</span>
-                        {{/Keyword}}
-                    </div>
-                    {{/Topic}}
-                </td>
-            </tr>
-        </table>
+        {{#Domain}}
+        <span id="domain">@ {{Domain}}</span>
+        {{/Domain}}
+        <!-- Separation -->
+        {{#Topic}}
+        <span id="topic"># {{Topic}}
+            <!-- Seperation Line -->
+            {{#Keyword}}
+            <span id="keyword"> // {{Keyword}}</span>
+            {{/Keyword}}
+        </span>
+        {{/Topic}}
     </div>
 
     <div id="main-section" class="content">
@@ -312,7 +304,7 @@
     });
 
     function setDomainIcon() {
-        var englishNormalDomains = ['Anki', 'Android', 'JavaScript', 'Vim', 'Todoist', 'CMD', 'jQuery', 'CSS', 'HTML',
+        var englishNormalDomains = ['Anki', 'Android', 'JavaScript', 'VIM', 'Todoist', 'CMD', 'jQuery', 'CSS', 'HTML',
             'Python', 'Java'
         ];
         var domainText = $('#domain').text()
@@ -328,6 +320,7 @@
         var chineseDomains = {
             '佛教': 'buddist',
             '多语言': 'multi-lang',
+            '算法': 'algorithm',
         }
         for (var chinese in chineseDomains) {
             if ($('#domain').text().search(chinese) !== -1) {
@@ -384,6 +377,12 @@
         $('html, body').animate({
             scrollTop: $(elem).offset().top - upperPadding
         }, 500);
+
+        if (!$(elem).visible()) {
+            $('html, body').animate({
+                scrollLeft: $(elem).offset().left - $(window).width() + 100
+            }, 500);
+        }
     }
 
     function showOneCloze(mode) {
