@@ -199,17 +199,16 @@
 
         // GENERATE LINK
         //      turn url-like plain text into clickable link
-        // $('#card-body').html(function (index, oldhtml) {
-        //     return Autolinker.link(oldhtml, {
-        //         phone: false,
-        //         truncate: {
-        //             length: 100,
-        //             location: 'smart'
-        //         },
-        //         stripPrefix: false,
-        //     })
-        // });
-
+        $('#source').html(function (index, oldhtml) {
+            return Autolinker.link(oldhtml, {
+                phone: false,
+                truncate: {
+                    length: 100,
+                    location: 'smart'
+                },
+                stripPrefix: false,
+            })
+        });
         // SCROLL TO FIRST CLOZE
         if (genuineClozeTotalNumber) {
             var $firstGenuineClozeElem = $('.genuine-cloze').first();
@@ -474,3 +473,4 @@
         $(elem).next().toggle(0);
     };
 </script>
+<tt_s preset="NAVER Translate (en)" style="display: none">{{Domain}}</tts>
