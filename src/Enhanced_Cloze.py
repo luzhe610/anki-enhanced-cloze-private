@@ -25,26 +25,31 @@ current_cloze_field_number = 0
 
 # TODO:
 # constants
-MODEL_NAME = "Enhanced Cloze"
-CONTENT_FIELD_NAME = "# Content"
-NOTE_FIELD_NAME = "Note"
+MODEL_NAME_CORE_PART = "Enhanced Cloze"
+CONTENT_FIELD_NAME_1 = "# Content 1"
+CONTENT_FIELD_NAME_2 = "# Content 2"
+CONTENT_FIELD_NAME_3 = "# Content 3"
+CONTENT_FIELD_NAME_4 = "# Content 4"
+CONTENT_FIELD_NAME_5 = "# Content 5"
+CONTENT_FIELD_NAME_LIST = [CONTENT_FIELD_NAME_1, CONTENT_FIELD_NAME_2,
+                           CONTENT_FIELD_NAME_3, CONTENT_FIELD_NAME_4, CONTENT_FIELD_NAME_5]
 IN_USE_CLOZES_FIELD_NAME = "In-use Clozes"
 UPDATE_ENHANCED_CLOZE_SHORTCUT = "Ctrl+Alt+Shift+U"
 MAX_CLOZE_FIELD_NUMBER = 100
 
 
-# TODO:
 def generate_enhanced_cloze(note):
     # cloze_id means, eg. c1, cloze_number means, eg. 1
 
-    src_content = note[CONTENT_FIELD_NAME]
-    soup = BeautifulSoup(note[NOTE_FIELD_NAME])
-    if soup.get_text():
-        src_content += '<br><div id={} class="content">{}</div>'.format(
-            "note", note[NOTE_FIELD_NAME])
-
+    src_content = ""
+    for content_field_name in CONTENT_FIELD_NAME_LIST:
+        soup = BeautifulSoup(note[content_field_name])
+        if soup.get_text():
+            src_content += '<br><div id={} class="content">{}</div>'.format(
+                "content-" + re.search(r'\d+', content_field_name).group(), note[content_field_name])
     src_content = remove_cloze_style_tag(src_content)
 
+# TODO:
     # Get ids of in-use clozes
     cloze_start_regex = r"\{\{c\d+::"
     cloze_start_matches = re.findall(cloze_start_regex, src_content)
@@ -115,11 +120,10 @@ def generate_enhanced_cloze(note):
                     current_cloze_field_number)
 
             note[dest_field_name] = dest_field_content
-        return
 
 
 def check_model(model):
-    return re.search("Enhanced Cloze", model["name"])
+    return re.search(MODEL_NAME_CORE_PART, model["name"])
 
 
 # TODO:
@@ -263,10 +267,10 @@ def process_note_in_editor(self):
     self.mw.progress.timer(100, self.loadNote, False)
 
 
-# TODO:
 def remove_style_of_note(note):
-    note[CONTENT_FIELD_NAME] = remove_style_of_string(note[CONTENT_FIELD_NAME])
-    note[NOTE_FIELD_NAME] = remove_style_of_string(note[NOTE_FIELD_NAME])
+    for content_field_name in CONTENT_FIELD_NAME_LIST:
+        note[content_field_name] = remove_style_of_string(
+            note[content_field_name])
 
 
 def remove_style_of_string(string):
@@ -277,12 +281,10 @@ def remove_style_of_string(string):
     return str(soup)
 
 
-# TODO:
 def add_cloze_style_tag_of_note(note):
-    note[CONTENT_FIELD_NAME] = add_cloze_style_tag_of_string(
-        note[CONTENT_FIELD_NAME])
-    note[NOTE_FIELD_NAME] = add_cloze_style_tag_of_string(
-        note[NOTE_FIELD_NAME])
+    for content_field_name in CONTENT_FIELD_NAME_LIST:
+        note[content_field_name] = add_cloze_style_tag_of_string(
+            note[content_field_name])
 
 
 # TODO:
@@ -294,9 +296,12 @@ def add_cloze_style_tag_of_string(string):
 
 # TODO:
 def remove_cloze_style_tag(string):
-    string = re.sub(
-        r'<span class="cloze-in-editor">(\{\{c\d+::)([\s\S]*?)\}\}</span>', '\g<1>\g<2>}}', string)
-    return string
+    # string = re.sub(
+    #     r'<span class="cloze-in-editor">(\{\{c\d+::)([\s\S]*?)\}\}</span>', '\g<1>\g<2>}}', string)
+    soup = BeautifulSoup(string)
+    for tag in soup.find_all('span', class_="cloze-in-editor"):
+        tag.unwrap()
+    return str(soup)
 
 
 # TODO:
