@@ -9,10 +9,13 @@ from aqt.addcards import AddCards
 from aqt.browser import Browser
 from aqt.editcurrent import EditCurrent
 from aqt.utils import tooltip
-from anki.hooks import addHook, wrap
 from aqt.editor import Editor
 from aqt.qt import *
+from anki.hooks import addHook, wrap
 
+from bs4 import BeautifulSoup
+
+# TODO:
 # global variables
 genuine_cloze_answer_array = []
 genuine_cloze_hint_array = []
@@ -20,6 +23,7 @@ pseudo_cloze_answer_array = []
 pseudo_cloze_hint_array = []
 current_cloze_field_number = 0
 
+# TODO:
 # constants
 MODEL_NAME = "Enhanced Cloze"
 CONTENT_FIELD_NAME = "# Content"
@@ -29,13 +33,15 @@ UPDATE_ENHANCED_CLOZE_SHORTCUT = "Ctrl+Alt+Shift+U"
 MAX_CLOZE_FIELD_NUMBER = 100
 
 
+# TODO:
 def generate_enhanced_cloze(note):
     # cloze_id means, eg. c1, cloze_number means, eg. 1
 
     src_content = note[CONTENT_FIELD_NAME]
-    if re.search(r"\S", note[NOTE_FIELD_NAME]):
-        src_content += '<br><div id="note" class="content">' + \
-            note[NOTE_FIELD_NAME] + '</div>'
+    soup = BeautifulSoup(note[NOTE_FIELD_NAME])
+    if soup.get_text():
+        src_content += '<br><div id={} class="content">{}</div>'.format(
+            "note", note[NOTE_FIELD_NAME])
 
     src_content = remove_cloze_style_tag(src_content)
 
@@ -112,10 +118,12 @@ def generate_enhanced_cloze(note):
         return
 
 
+# TODO:
 def check_model(model):
     return re.search("Enhanced Cloze", model["name"])
 
 
+# TODO:
 def process_cloze(matchObj):
 
     cloze_string = matchObj.group()  # eg. {{c1::aa[::bbb]}}
@@ -159,17 +167,14 @@ def process_cloze(matchObj):
 
 
 def on_add_cards(self, _old):
-    note = self.editor.note
-    if not note or not check_model(note.model()):
-        return _old(self)
-    remove_style_of_note(note)
-    add_cloze_style_tag_of_note(note)
-    generate_enhanced_cloze(note)
-    ret = _old(self)
-    return ret
+    add_or_edit_current(self, _old)
 
 
 def on_edit_current_save(self, _old):
+    add_or_edit_current(self, _old)
+
+
+def add_or_edit_current(self, _old):
     note = self.editor.note
     if not note or not check_model(note.model()):
         return _old(self)
@@ -180,6 +185,7 @@ def on_edit_current_save(self, _old):
     return ret
 
 
+# TODO:
 def update_all_enhanced_clozes_in_browser(self, evt=None):
     browser = self
     mw = browser.mw
@@ -196,11 +202,13 @@ def update_all_enhanced_clozes_in_browser(self, evt=None):
     mw.reset()
 
 
+# TODO:
 def update_all_enhanced_clozes_in_main_window():
     update_all_enhanced_cloze(aqt)
     aqt.mw.reset()
 
 
+# TODO:
 def update_all_enhanced_cloze(self):
     mw = self.mw
     nids = mw.col.findNotes("*")
@@ -221,8 +229,11 @@ def update_all_enhanced_cloze(self):
     tooltip('Update Enhanced Clozed Finished')
 
 
+# TODO:
 def setup_menu_in_browser(self):
     setup_menu(self)
+
+# TODO:
 
 
 def setup_menu(window):
@@ -241,21 +252,26 @@ def setup_menu(window):
             lambda _, b=window: update_all_enhanced_clozes_in_browser(b))
 
 
+# TODO:
 def on_save_now(self, callback=None):
-    update_all_enhanced_cloze(self)
+    # update_all_enhanced_cloze(self)
+    generate_enhanced_cloze(self.note)
 
 
+# TODO:
 def process_note_in_editor(self):
     remove_style_of_note(self.note)
     add_cloze_style_tag_of_note(self.note)
     self.mw.progress.timer(100, self.loadNote, False)
 
 
+# TODO:
 def remove_style_of_note(note):
     note[CONTENT_FIELD_NAME] = remove_style_of_string(note[CONTENT_FIELD_NAME])
     note[NOTE_FIELD_NAME] = remove_style_of_string(note[NOTE_FIELD_NAME])
 
 
+# TODO:
 def remove_style_of_string(string):
     string = re.sub(
         r"(<[^>]*)(style\s*=\s*(?P<quot>[\"\'])[\s\S]*?(?P=quot))([^>]*>)", "\g<1>\g<4>", string)
@@ -264,6 +280,7 @@ def remove_style_of_string(string):
     return string
 
 
+# TODO:
 def add_cloze_style_tag_of_note(note):
     note[CONTENT_FIELD_NAME] = add_cloze_style_tag_of_string(
         note[CONTENT_FIELD_NAME])
@@ -271,18 +288,21 @@ def add_cloze_style_tag_of_note(note):
         note[NOTE_FIELD_NAME])
 
 
+# TODO:
 def add_cloze_style_tag_of_string(string):
     string = re.sub(
         r'(?<!<span class="cloze-in-editor">)(\{\{c\d+::)([\s\S]*?)\}\}', '<span class="cloze-in-editor">\g<1>\g<2>}}</span>', string)
     return string
 
 
+# TODO:
 def remove_cloze_style_tag(string):
     string = re.sub(
         r'<span class="cloze-in-editor">(\{\{c\d+::)([\s\S]*?)\}\}</span>', '\g<1>\g<2>}}', string)
     return string
 
 
+# TODO:
 def empty_generated_fields(self):
     note = self.note
     if not note or not check_model(note.model()):
@@ -293,6 +313,7 @@ def empty_generated_fields(self):
     self.mw.progress.timer(100, self.loadNote, False)
 
 
+# TODO:
 def setup_buttons(self):
     self._addButton(
         "Reset Style", lambda: self.process_note_in_editor(),
@@ -305,9 +326,7 @@ def setup_buttons(self):
 
 
 AddCards.addCards = wrap(AddCards.addCards, on_add_cards, "around")
-
 EditCurrent.onSave = wrap(EditCurrent.onSave, on_edit_current_save, "around")
-
 # Editor.saveNow = wrap(Editor.saveNow, on_save_now, "before")
 
 setup_menu(aqt.mw)
@@ -315,4 +334,4 @@ addHook("browser.setupMenus", setup_menu_in_browser)
 
 Editor.process_note_in_editor = process_note_in_editor
 Editor.empty_generated_fields = empty_generated_fields
-Editor.setupButtons = wrap(Editor.setupButtons, setup_buttons)
+Editor.setupButtons = wrap(Editor.setupButtons, setup_buttons, "after")
