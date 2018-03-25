@@ -296,11 +296,11 @@ def empty_generated_fields(self):
 def setup_buttons(self):
     self._addButton(
         "Reset Style", lambda: self.process_note_in_editor(),
-        text="R", tip="Reset Style", key="Ctrl+Shift+R"
+        text="[R]", tip="Reset Style", key="Ctrl+Shift+R"
     )
     self._addButton(
-        "Empty Fiels", lambda: self.empty_generated_fields(),
-        text="X", tip="Empty Fiels", key=""
+        "Empty Fields", lambda: self.empty_generated_fields(),
+        text="[X]", tip="Empty Fields", key=""
     )
 
 
