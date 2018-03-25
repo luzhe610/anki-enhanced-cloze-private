@@ -186,7 +186,7 @@ def add_or_edit_current(self, _old):
 
 
 # TODO:
-def update_all_enhanced_clozes_in_browser(self, evt=None):
+def update_all_enhanced_clozes_in_browser(self):
     browser = self
     mw = browser.mw
 
@@ -233,9 +233,8 @@ def update_all_enhanced_cloze(self):
 def setup_menu_in_browser(self):
     setup_menu(self)
 
+
 # TODO:
-
-
 def setup_menu(window):
     try:
         menu = window.form.menuUtilities
@@ -325,6 +324,10 @@ def setup_buttons(self):
     )
 
 
+def on_browser_close_event(self, evt):
+    update_all_enhanced_clozes_in_browser(self)
+
+
 AddCards.addCards = wrap(AddCards.addCards, on_add_cards, "around")
 EditCurrent.onSave = wrap(EditCurrent.onSave, on_edit_current_save, "around")
 # Editor.saveNow = wrap(Editor.saveNow, on_save_now, "before")
@@ -335,3 +338,5 @@ addHook("browser.setupMenus", setup_menu_in_browser)
 Editor.process_note_in_editor = process_note_in_editor
 Editor.empty_generated_fields = empty_generated_fields
 Editor.setupButtons = wrap(Editor.setupButtons, setup_buttons, "after")
+
+Browser.closeEvent = wrap(Browser.closeEvent, on_browser_close_event, "before")
