@@ -118,7 +118,6 @@ def generate_enhanced_cloze(note):
         return
 
 
-# TODO:
 def check_model(model):
     return re.search("Enhanced Cloze", model["name"])
 
@@ -225,7 +224,7 @@ def update_all_enhanced_cloze(self):
         # note[NOTE_FIELD_NAME] = remove_cloze_style_tag(note[NOTE_FIELD_NAME])
 
         generate_enhanced_cloze(note)
-        note.flush()
+        # note.flush()
     tooltip('Update Enhanced Clozed Finished')
 
 
@@ -270,13 +269,12 @@ def remove_style_of_note(note):
     note[NOTE_FIELD_NAME] = remove_style_of_string(note[NOTE_FIELD_NAME])
 
 
-# TODO:
 def remove_style_of_string(string):
-    string = re.sub(
-        r"(<[^>]*)(style\s*=\s*(?P<quot>[\"\'])[\s\S]*?(?P=quot))([^>]*>)", "\g<1>\g<4>", string)
-    string = re.sub(r"align=\"left\"", "", string)
-    string = re.sub(r"valign=\"middle\"", "", string)
-    return string
+    soup = BeautifulSoup(string)
+    for tag in soup.find_all(True):
+        for attr in ["style", "align", "valign"]:
+            del tag[attr]
+    return str(soup)
 
 
 # TODO:
