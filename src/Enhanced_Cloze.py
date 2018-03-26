@@ -22,7 +22,6 @@ pseudo_cloze_hint_array = []
 current_cloze_field_number = 0
 
 # constants
-
 CONTENT_FIELD_NAME_1 = "# Content 1"
 CONTENT_FIELD_NAME_2 = "# Content 2"
 CONTENT_FIELD_NAME_3 = "# Content 3"
@@ -44,7 +43,7 @@ def generate_enhanced_cloze(note):
         content_field_content = note[content_field_name]
         if re.search(r'\S', content_field_content):
             src_content += '<div id="content-{}" class="content-block">{}</div>'.format(
-                re.search(r'\d+', content_field_name), content_field_content)
+                re.search(r'\d+', content_field_name).group(), content_field_content)
 
     # TODO:
     src_content = remove_cloze_style_tag(src_content)
@@ -53,10 +52,9 @@ def generate_enhanced_cloze(note):
     cloze_start_regex = r"\{\{c\d+::"
     cloze_start_matches = re.findall(cloze_start_regex, src_content)
 
-    # if no clozes are found, empty Cloze1 ~ Cloze20 and fill in Cloze99
     if not cloze_start_matches:
         for i_cloze_field_number in range(1, MAX_CLOZE_FIELD_NUMBER + 1):
-            dest_field_name = "Cloze%s" % i_cloze_field_number
+            dest_field_name = "Cloze{}".format(i_cloze_field_number)
             note[dest_field_name] = ""
 
         note[IN_USE_CLOZES_FIELD_NAME] = "[0]"
@@ -69,15 +67,14 @@ def generate_enhanced_cloze(note):
         return
     else:
         in_use_clozes_numbers = sorted(
-            [int(re.sub(r"\D", "", x)) for x in set(cloze_start_matches)])
+            [int(re.search(r"\d+", x).group()) for x in set(cloze_start_matches)])
         note[IN_USE_CLOZES_FIELD_NAME] = str(in_use_clozes_numbers)
 
         # Fill in content in in-use cloze fields and empty content in not-in-use fields
         global current_cloze_field_number
         for current_cloze_field_number in range(1, MAX_CLOZE_FIELD_NUMBER + 1):
 
-            dest_field_name = "Cloze%s" % current_cloze_field_number
-            dest_field_content = ""
+            dest_field_name = "Cloze{}".format(current_cloze_field_number)
 
             if not current_cloze_field_number in in_use_clozes_numbers:
                 dest_field_content = ""
@@ -102,28 +99,28 @@ def generate_enhanced_cloze(note):
                 # Store corresponding answers and hints (gunuine or pseudo)
                 # in html of every in-use cloze fields for javascript to fetch later
                 for index, item in enumerate(genuine_cloze_answer_array):
-                    dest_field_content += '<pre style="display:none"><div id="genuine-cloze-answer-%s">%s</div></pre>' % (
+                    dest_field_content += '<pre style="display:none"><div id="genuine-cloze-answer-{}">{}</div></pre>'.format(
                         index, item)
                 for index, item in enumerate(genuine_cloze_hint_array):
-                    dest_field_content += '<pre style="display:none"><div id="genuine-cloze-hint-%s">%s</div></pre>' % (
+                    dest_field_content += '<pre style="display:none"><div id="genuine-cloze-hint-{}">{}</div></pre>'.format(
                         index, item)
                 for index, item in enumerate(pseudo_cloze_answer_array):
-                    dest_field_content += '<pre style="display:none"><div id="pseudo-cloze-answer-%s">%s</div></pre>' % (
+                    dest_field_content += '<pre style="display:none"><div id="pseudo-cloze-answer-{}">{}</div></pre>'.format(
                         index, item)
                 for index, item in enumerate(pseudo_cloze_hint_array):
-                    dest_field_content += '<pre style="display:none"><div id="pseudo-cloze-hint-%s">%s</div></pre>' % (
+                    dest_field_content += '<pre style="display:none"><div id="pseudo-cloze-hint-{}">{}</div></pre>'.format(
                         index, item)
 
-                dest_field_content += '<div style="display:none">{{c%s::@@@@}}</div>' % current_cloze_field_number
-                dest_field_content += '<div id="card-cloze-id" style="display:none">c%s</div>' % str(
+                dest_field_content += '<div style="display:none">{{c{}::@@@@}}</div>'.format(
                     current_cloze_field_number)
+                dest_field_content += '<div id="card-cloze-id" style="display:none">c{}</div>'.format(
+                    str(current_cloze_field_number))
 
             note[dest_field_name] = dest_field_content
-        return
 
 
 def check_model(model):
-    return re.search("Enhanced Cloze", model["name"])
+    return re.search(MODEL_NAME_CORE_PART, model["name"])
 
 
 # TODO:
@@ -152,9 +149,8 @@ def process_cloze(matchObj):
         pseudo_cloze_answer_array.append(answer)
         pseudo_cloze_hint_array.append(hint)
         index_in_array = len(pseudo_cloze_answer_array) - 1
-        new_html = '<span class="pseudo-cloze" index="_index_" show-state="hint" cloze-id="_cloze-id_">_content_</span>'
-        new_html = new_html.replace('_index_', str(index_in_array)).replace(
-            '_cloze-id_', cloze_id).replace('_content_', cloze_string.replace("{", '[').replace("}", "]"))
+        new_html = '<span class="pseudo-cloze" index="{}" show-state="hint" cloze-id="{}">{}</span>'.format(
+            str(index_in_array), cloze_id, cloze_string.replace("{", '[').replace("}", "]"))
         return new_html
     else:
         # Process genuine-cloze
@@ -163,9 +159,8 @@ def process_cloze(matchObj):
         genuine_cloze_answer_array.append(answer)
         genuine_cloze_hint_array.append(hint)
         index_in_array = len(genuine_cloze_answer_array) - 1
-        new_html = '<span class="genuine-cloze" index="_index_" show-state="hint" cloze-id="_cloze-id_">_content_</span>'
-        new_html = new_html.replace('_index_', str(index_in_array)).replace(
-            '_cloze-id_', cloze_id).replace('_content_', cloze_string)
+        new_html = '<span class="genuine-cloze" index="{}" show-state="hint" cloze-id="{}">{}</span>'.format(
+            str(index_in_array),  cloze_id, cloze_string)
         return new_html
 
 
@@ -226,7 +221,7 @@ def update_all_enhanced_cloze():
         # note[NOTE_FIELD_NAME] = remove_cloze_style_tag(note[NOTE_FIELD_NAME])
 
         generate_enhanced_cloze(note)
-        note.flush()
+        # note.flush()
     tooltip('Update Enhanced Clozed Finished')
 
 
@@ -270,11 +265,11 @@ def remove_style_of_note(note):
 
 # TODO:
 def remove_style_of_string(string):
-    string = re.sub(
-        r"(<[^>]*)(style\s*=\s*(?P<quot>[\"\'])[\s\S]*?(?P=quot))([^>]*>)", "\g<1>\g<4>", string)
-    string = re.sub(r"align=\"left\"", "", string)
-    string = re.sub(r"valign=\"middle\"", "", string)
-    return string
+    soup = BeautifulSoup(string)
+    for tag in soup.find_all(True):
+        for attr in ["style", "align", "valign"]:
+            del tag[attr]
+    return str(soup)
 
 
 def add_cloze_wrapper_of_note(note):
@@ -286,15 +281,28 @@ def add_cloze_wrapper_of_note(note):
 # TODO:
 def add_cloze_wrapper_of_string(string):
     string = re.sub(
-        r'(?<!<span class="cloze-in-editor">)(\{\{c\d+::)([\s\S]*?)\}\}', '<span class="cloze-in-editor">\g<1>\g<2>}}</span>', string)
+        r'(?<!<span class=[\"\']cloze-in-editor[\"\']>)(\{\{c\d+::[\s\S]*?\}\})', '<span class="cloze-in-editor">\g<1></span>', string)
     return string
 
 
 # TODO:
 def remove_cloze_style_tag(string):
-    string = re.sub(
-        r'<span class="cloze-in-editor">(\{\{c\d+::)([\s\S]*?)\}\}</span>', '\g<1>\g<2>}}', string)
-    return string
+    # string = re.sub(
+    #     r'<span class="cloze-in-editor">(\{\{c\d+::)([\s\S]*?)\}\}</span>', '\g<1>\g<2>}}', string)
+    soup = BeautifulSoup(string)
+    for tag in soup.find_all('span', class_="cloze-in-editor"):
+        tag.unwrap()
+    return str(soup)
+
+# TODO:
+
+
+def rebuild_fields_in_editor(self):
+    note = self.note
+    if not note or not check_model(note.model()):
+        return
+    generate_enhanced_cloze(note)
+    self.mw.progress.timer(100, self.loadNote, False)
 
 
 # TODO:
@@ -310,14 +318,27 @@ def empty_generated_fields(self):
 
 # TODO:
 def setup_buttons(self):
-    self._addButton(
-        "Reset Style", lambda: self.process_note_in_editor(),
-        text="R", tip="Reset Style", key="Ctrl+Shift+R"
+    b = self._addButton(
+        "Process editor", lambda: self.process_note_in_editor(),
+        text="[P]", size=False, tip="Process editor", key="Ctrl+Shift+P"
     )
-    self._addButton(
-        "Empty Fiels", lambda: self.empty_generated_fields(),
-        text="X", tip="Empty Fiels", key=""
+    b.setFixedWidth(24)
+    b = self._addButton(
+        "Rebuild Fields", lambda: self.rebuild_fields_in_editor(),
+        text="[R]", size=False, tip="Rebuild Fields", key="Ctrl+Shift+R"
     )
+    b.setFixedWidth(24)
+    b = self._addButton(
+        "Empty Fields", lambda: self.empty_generated_fields(),
+        text="[E]", size=False, tip="Empty Fields", key="Ctrl+Shift+E"
+    )
+    b.setFixedWidth(24)
+
+# TODO:
+
+
+def on_browser_close_event(self, evt):
+    update_all_enhanced_clozes_in_browser(self)
 
 
 AddCards.addCards = wrap(AddCards.addCards, on_add_cards, "around")
@@ -330,5 +351,8 @@ addHook("browser.setupMenus", setup_menu_in_browser)
 
 # TODO:
 Editor.process_note_in_editor = process_note_in_editor
+Editor.rebuild_fields_in_editor = rebuild_fields_in_editor
 Editor.empty_generated_fields = empty_generated_fields
-Editor.setupButtons = wrap(Editor.setupButtons, setup_buttons)
+Editor.setupButtons = wrap(Editor.setupButtons, setup_buttons, "after")
+
+# Browser.closeEvent = wrap(Browser.closeEvent, on_browser_close_event, "before")
