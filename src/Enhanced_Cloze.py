@@ -21,24 +21,32 @@ pseudo_cloze_answer_array = []
 pseudo_cloze_hint_array = []
 current_cloze_field_number = 0
 
-# TODO:
 # constants
-MODEL_NAME = "Enhanced Cloze"
-CONTENT_FIELD_NAME = "# Content"
-NOTE_FIELD_NAME = "Note"
+
+CONTENT_FIELD_NAME_1 = "# Content 1"
+CONTENT_FIELD_NAME_2 = "# Content 2"
+CONTENT_FIELD_NAME_3 = "# Content 3"
+CONTENT_FIELD_NAME_4 = "# Content 4"
+CONTENT_FIELD_NAME_5 = "# Content 5"
+
+CONTENT_FIELD_NAME_LIST = [CONTENT_FIELD_NAME_1, CONTENT_FIELD_NAME_2,
+                           CONTENT_FIELD_NAME_3, CONTENT_FIELD_NAME_4, CONTENT_FIELD_NAME_5]
+
 IN_USE_CLOZES_FIELD_NAME = "In-use Clozes"
 MAX_CLOZE_FIELD_NUMBER = 100
 
 
-# TODO:
 def generate_enhanced_cloze(note):
     # cloze_id means, eg. c1, cloze_number means, eg. 1
 
-    src_content = note[CONTENT_FIELD_NAME]
-    if re.search(r"\S", note[NOTE_FIELD_NAME]):
-        src_content += '<br><div id="note" class="content">' + \
-            note[NOTE_FIELD_NAME] + '</div>'
+    src_content = ""
+    for content_field_name in CONTENT_FIELD_NAME_LIST:
+        content_field_content = note[content_field_name]
+        if re.search(r'\S', content_field_content):
+            src_content += '<div id="content-{}" class="content-block">{}</div>'.format(
+                re.search(r'\d+', content_field_name), content_field_content)
 
+    # TODO:
     src_content = remove_cloze_style_tag(src_content)
 
     # Get ids of in-use clozes
@@ -114,7 +122,6 @@ def generate_enhanced_cloze(note):
         return
 
 
-# TODO:
 def check_model(model):
     return re.search("Enhanced Cloze", model["name"])
 
@@ -162,25 +169,20 @@ def process_cloze(matchObj):
         return new_html
 
 
-# TODO:
 def on_add_cards(self, _old):
-    note = self.editor.note
-    if not note or not check_model(note.model()):
-        return _old(self)
-    remove_style_of_note(note)
-    add_cloze_style_tag_of_note(note)
-    generate_enhanced_cloze(note)
-    ret = _old(self)
-    return ret
+    on_add_cards_and_edit_current(self, _old)
 
 
-# TODO:
 def on_edit_current_save(self, _old):
+    on_add_cards_and_edit_current(self, _old)
+
+
+def on_add_cards_and_edit_current(self, _old):
     note = self.editor.note
     if not note or not check_model(note.model()):
         return _old(self)
     remove_style_of_note(note)
-    add_cloze_style_tag_of_note(note)
+    add_cloze_wrapper_of_note(note)
     generate_enhanced_cloze(note)
     ret = _old(self)
     return ret
@@ -216,7 +218,7 @@ def update_all_enhanced_cloze():
         if not check_model(note.model()):
             continue
         remove_style_of_note(note)
-        add_cloze_style_tag_of_note(note)
+        add_cloze_wrapper_of_note(note)
 
         # # in case you have to remove
         # note[CONTENT_FIELD_NAME] = remove_cloze_style_tag(
@@ -256,14 +258,14 @@ def on_save_now(self, callback=None):
 # TODO:
 def process_note_in_editor(self):
     remove_style_of_note(self.note)
-    add_cloze_style_tag_of_note(self.note)
+    add_cloze_wrapper_of_note(self.note)
     self.mw.progress.timer(100, self.loadNote, False)
 
 
-# TODO:
 def remove_style_of_note(note):
-    note[CONTENT_FIELD_NAME] = remove_style_of_string(note[CONTENT_FIELD_NAME])
-    note[NOTE_FIELD_NAME] = remove_style_of_string(note[NOTE_FIELD_NAME])
+    for content_field_name in CONTENT_FIELD_NAME_LIST:
+        note[content_field_name] = remove_style_of_string(
+            note[content_field_name])
 
 
 # TODO:
@@ -275,16 +277,14 @@ def remove_style_of_string(string):
     return string
 
 
-# TODO:
-def add_cloze_style_tag_of_note(note):
-    note[CONTENT_FIELD_NAME] = add_cloze_style_tag_of_string(
-        note[CONTENT_FIELD_NAME])
-    note[NOTE_FIELD_NAME] = add_cloze_style_tag_of_string(
-        note[NOTE_FIELD_NAME])
+def add_cloze_wrapper_of_note(note):
+    for content_field_name in CONTENT_FIELD_NAME_LIST:
+        note[content_field_name] = add_cloze_wrapper_of_string(
+            note[content_field_name])
 
 
 # TODO:
-def add_cloze_style_tag_of_string(string):
+def add_cloze_wrapper_of_string(string):
     string = re.sub(
         r'(?<!<span class="cloze-in-editor">)(\{\{c\d+::)([\s\S]*?)\}\}', '<span class="cloze-in-editor">\g<1>\g<2>}}</span>', string)
     return string
