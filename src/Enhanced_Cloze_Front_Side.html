@@ -3,7 +3,7 @@
         <table>
             <tr>
                 <td rowspan="2">
-                    <img src="_ui_mark.png" id="star" class="marked img-no-border" draggable="false" style="display: none;">
+                    <img src="_ui_mark.png" id="star" class="marked img-no-border">
                     <div id="domain-icon"></div>
                 </td>
                 <td>
@@ -17,7 +17,7 @@
                 <td>
                     {{#Topic}}
                     <div id="topic"># {{Topic}}
-                        <!-- Seperation Line -->
+                        <!-- // -->
                         {{#Keyword}}
                         <span id="keyword"> // {{Keyword}}</span>
                         {{/Keyword}}
@@ -31,10 +31,10 @@
         {{#Domain}}
         <span id="domain">@ {{Domain}}</span>
         {{/Domain}}
-        <!-- Separation -->
+        <!-- // -->
         {{#Topic}}
         <span id="topic"># {{Topic}}
-            <!-- Seperation Line -->
+            <!-- // -->
             {{#Keyword}}
             <span id="keyword"> // {{Keyword}}</span>
             {{/Keyword}}
@@ -72,32 +72,26 @@
                 牌组: {{Deck}}
             </div>
 
-            <!-- Separation line -->
+            <!-- // -->
             {{#Project}}
             <div>
                 项目: {{Project}}
             </div>
             {{/Project}}
 
-            <!-- Separation line -->
+            <!-- // -->
             {{#Tags}}
             <div id="tags">
                 标签: {{Tags}}
             </div>
             {{/Tags}}
 
-            <!-- Separation line -->
-            {{#Subject}}
-            <div>
-                主题: {{Subject}}
-            </div>
-            {{/Subject}}
         </div>
     </div>
-    <br>
 
-    <!-- Separation line -->
+    <!-- // -->
     {{#Source}}
+    <br>
     <div id="source-section">
         <div id="source-header" class="header header-green">
             来源
@@ -106,10 +100,11 @@
             {{Source}}
         </div>
     </div>
-    <br> {{/Source}}
+    {{/Source}}
 
-    <!-- Separation line -->
+    <!-- // -->
     {{#Extra}}
+    <br>
     <div id="extra-section">
         <div id="extra-header" class="header header-yellow">
             补充
@@ -118,7 +113,7 @@
             {{Extra}}
         </div>
     </div>
-    <br> {{/Extra}}
+    {{/Extra}}
 
     <div id="editor-section">
         <div id="editor-header">
@@ -166,9 +161,8 @@
             platform = 'mobile';
         }
 
+
         // INITIALIZE CLOZES
-        //      genuine clozes refer to those belong to current card and need to be answered, e.g. {{c2::abc}} on card2 
-        //      pseudo clozes refer to the opposite, e.g. {{c1::abc}} and {{c3::abc}} on card2 
         $('.genuine-cloze, .pseudo-cloze').each(function (index, elem) {
             toggleCloze(elem, 'hint')
         });
@@ -176,19 +170,12 @@
 
         // HIDE TOPIC 
         if ($('#topic').text().lastIndexOf('#')) {
-            $('#topic').hide(0)
+            $('#topic').hide()
         }
 
 
         // SET DOMAIN ICONS
         setDomainIcon();
-
-
-        // ADD SWITCH FOR HIDDEN NOTE 
-        if ($('#note').text().match(/\S/g)) {
-            $('#note').before('<div id="note-switch"><hr>Show<hr></div>')
-        }
-
 
         // SHORTEN TAGS
         //      leaving only the last part if hierarchical tags are used, i.e. tag1::tag2::tag3 -> tag3
@@ -209,14 +196,15 @@
                 stripPrefix: false,
             })
         });
+
+
         // SCROLL TO FIRST CLOZE
         if (genuineClozeTotalNumber) {
             var $firstGenuineClozeElem = $('.genuine-cloze').first();
-            // if ($firstGenuineClozeElem.parents('#note')) {
-            //     $('#note').show();
-            // }
-            scrollToCloze($firstGenuineClozeElem.get(0), true)
+            // TODO:
+            scrollToCloze($firstGenuineClozeElem.get(0))
         }
+
 
         // SETUP KEY BINDING
         $(document).bind('keyup', 'i', function () {
@@ -241,13 +229,13 @@
             showOneCloze();
         });
 
-        $('#show-one-pseudo-cloze-left, #show-one-pseudo-cloze-right').click(function () {
-            showOneCloze('pseudo');
-        });
+        // $('#show-one-pseudo-cloze-left, #show-one-pseudo-cloze-right').click(function () {
+        //     showOneCloze('pseudo');
+        // });
 
-        $('#show-all-pseudo-clozes').click(function () {
-            showAllPseudoClozes();
-        })
+        // $('#show-all-pseudo-clozes').click(function () {
+        //     showAllPseudoClozes();
+        // })
 
 
         // SETUP DOMAIN ICON CLICK EVENT
@@ -265,15 +253,17 @@
         })
 
         // SETUP HEADER CLICK EVENT
-        var headerIds = ['info-header', 'source-header', 'extra-header', 'note-switch'];
-        for (var index in headerIds) {
-            var elem;
-            if (elem = document.getElementById(headerIds[index])) {
-                elem.addEventListener('click', function () {
-                    toggleNextElement(this);
+        var headerIds = ['info-header', 'source-header', 'extra-header'];
+        $.each(headerIds, function (index, id) {
+            $elem = $('#' + id)
+            if ($elem.length) {
+                $elem.click(function () {
+                    toggleNextElement(this)
                 })
             }
-        }
+        })
+
+
         $('#domain-icon').effect('pulsate');
     });
 
@@ -304,7 +294,7 @@
 
     function setDomainIcon() {
         var englishNormalDomains = ['Anki', 'Android', 'JavaScript', 'VIM', 'Todoist', 'CMD', 'jQuery', 'CSS', 'HTML',
-            'Python', 'Java'
+            'Python', 'Java', 'SQL'
         ];
         var domainText = $('#domain').text()
         var domainTextSubwords = domainText.match(/\w+/g)
@@ -357,7 +347,7 @@
     }
 
     function initLangSelector() {
-        var langSelectorList = ['Text'].concat(['HTML', 'CSS', 'Javascript', 'Java', 'Python'].sort());
+        var langSelectorList = ['Text'].concat(['HTML', 'CSS', 'Javascript', 'Java', 'Python', 'SQL'].sort());
         for (var index in langSelectorList) {
             var lang = langSelectorList[index];
             var optElem = document.createElement('option');
@@ -376,17 +366,26 @@
         $('html, body').animate({
             scrollTop: $(elem).offset().top - upperPadding
         }, 500);
-        if (isFirst) {
-            $('html').promise().done(function () {
-                $('#topic-section-win').css('top', function () {
-                        return elem.getBoundingClientRect().top - this.offsetHeight - 10;
-                    })
-                    .delay(3000).animate({
-                        top: 0
-                    }, 500);
-            })
-        }
-
+        // if (isFirst) {
+        //     $('html').promise().done(function () {
+        //         $('#topic-section-win').css('top', function () {
+        //                 return elem.getBoundingClientRect().top - this.offsetHeight - 10;
+        //             })
+        //             .delay(3000).animate({
+        //                 top: 0
+        //             }, 500);
+        //     })
+        // }
+        // if (isFirst) {
+        //     $('html').promise().done(function () {
+        //         $('#topic-section-win').css('top', function () {
+        //             // return elem.getBoundingClientRect().top - this.offsetHeight - 10;
+        //             return elem.getBoundingClientRect().top + 80;
+        //         }).css('display', 'block').delay(2000).animate({
+        //             top: 0
+        //         }, 500);
+        //     })
+        // }
 
         if (!$(elem).visible()) {
             $('html, body').animate({
@@ -461,7 +460,18 @@
             answer = $('#pseudo-cloze-answer-' + index).html();
             hint = $('#pseudo-cloze-hint-' + index).html();
         }
+
+        // var answerTextDiv = document.createElement('div');
+        // var $answerTextDiv = $(answerTextDiv);
+        // $answerTextDiv.text(answer);
+        // var answerText = $answerTextDiv.text();
+        // if (answerText.match(/^\/\/$/) || answerText.match(/^``$/)) {
+        //     hint = answer;
+        //     hint = '&nbsp;' + hint + '&nbsp;';
+        // } else {
         hint = '&nbsp;[&nbsp;' + hint + '&nbsp;]&nbsp;';
+        // }
+
 
         if (displayOption == 'answer') {
             $(elem).attr('show-state', 'answer');
