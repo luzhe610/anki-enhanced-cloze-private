@@ -106,3 +106,5 @@ aqt/
 .vscode/
 .vscode/temp.sql
 bs4/
+lxml/
+bleach/
