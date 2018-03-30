@@ -8,38 +8,39 @@
                 </td>
                 <td>
                     {{#Domain}}
-                    <div id="domain">@ {{Domain}}
-                    </div>
+                    <div id="domain">@ {{Domain}}</div>
                     {{/Domain}}
                 </td>
             </tr>
             <tr>
                 <td>
                     {{#Topic}}
-                    <div id="topic"># {{Topic}}
-                        <!-- // -->
-                        {{#Keyword}}
-                        <span id="keyword"> // {{Keyword}}</span>
-                        {{/Keyword}}
-                    </div>
+                    <span id="topic"># {{Topic}}</span>
                     {{/Topic}}
+                    <!-- // -->
+
+                    {{#Keyword}}
+                    <span id="keyword">// {{Keyword}}</span>
+                    {{/Keyword}}
                 </td>
             </tr>
         </table>
     </div>
+
     <div id="topic-section-mobile" class="header header-red topic-section">
         {{#Domain}}
         <span id="domain">@ {{Domain}}</span>
         {{/Domain}}
         <!-- // -->
+
         {{#Topic}}
-        <span id="topic"># {{Topic}}
-            <!-- // -->
-            {{#Keyword}}
-            <span id="keyword"> // {{Keyword}}</span>
-            {{/Keyword}}
-        </span>
+        <span id="topic"># {{Topic}}</span>
         {{/Topic}}
+        <!-- // -->
+
+        {{#Keyword}}
+        <span id="keyword">// {{Keyword}}</span>
+        {{/Keyword}}
     </div>
 
     <div id="main-section" class="content">
@@ -68,24 +69,16 @@
         </div>
 
         <div id="info" class="content" style="display:none">
-            <div>
-                牌组: {{Deck}}
-            </div>
+            <div> 牌组: {{Deck}} </div>
 
-            <!-- // -->
             {{#Project}}
-            <div>
-                项目: {{Project}}
-            </div>
+            <div> 项目: {{Project}} </div>
             {{/Project}}
-
             <!-- // -->
-            {{#Tags}}
-            <div id="tags">
-                标签: {{Tags}}
-            </div>
-            {{/Tags}}
 
+            {{#Tags}}
+            <div id="tags"> 标签: {{Tags}} </div>
+            {{/Tags}}
         </div>
     </div>
 
@@ -115,22 +108,18 @@
     </div>
     {{/Extra}}
 
-    <div id="editor-section">
-        <div id="editor-header">
+    <div id="notepad-section" style="display:none">
+        <div id="notepad-header">
             <img src="_ui_handle.png" class="img-no-border">
-            <select id="lang-selector"> </select>
         </div>
-        <div id="editor">
-            <iframe id="editor-framework" frameborder="1"></iframe>
+        <div id="notepad">
+            <textarea></textarea>
         </div>
     </div>
-
 
     <div id="functional-elements">
         <div id="show-one-cloze-left"></div>
         <div id="show-one-cloze-right"></div>
-        <div id="show-one-pseudo-cloze-left"></div>
-        <div id="show-one-pseudo-cloze-right"></div>
         <div id="no-more-cloze"></div>
         <div id="show-all-pseudo-clozes"></div>
         <div style="display:none">
@@ -150,41 +139,47 @@
     var genuineClozeTotalNumber = $('.genuine-cloze').length;
     var indexOfPseudoClozeToShow = 0;
     var pseudoClozeTotalNumber = $('.pseudo-cloze').length;
-    var editorInMain;
-    var customLang;
     var platform;
 
     $(function () {
-        if (document.querySelector('html.win')) {
+        // get platform
+        if ($('html.win').length) {
             platform = 'win';
-        } else if (document.querySelector('html.mobile')) {
-            platform = 'mobile';
+        } else if ($('html.mobile').length) {
+            platform = 'mobile'
         }
 
+        // setup domain icons
+        setDomainIcon();
+        $('#domain-icon').effect('pulsate');
 
-        // INITIALIZE CLOZES
+        // hide topic with #
+        var $topic = $('#topic');
+        var $keyword = $('#keyword');
+        if ($topic.text().lastIndexOf('#')) {
+            $topic.hide();
+            $keyword.hide();
+        }
+
+        // wrap content block
+        $('.content-block').each(function (index, elem) {
+            if ($(elem).text().search(/\S/) !== -1) {
+                $(elem).wrap('<div class="content-block-container"></div>')
+            }
+        })
+
+        // initialize clozes
         $('.genuine-cloze, .pseudo-cloze').each(function (index, elem) {
             toggleCloze(elem, 'hint')
         });
 
-
-        // HIDE TOPIC 
-        if ($('#topic').text().lastIndexOf('#')) {
-            $('#topic').hide()
-        }
-
-
-        // SET DOMAIN ICONS
-        setDomainIcon();
-
-        // SHORTEN TAGS
+        // shorten tags
         //      leaving only the last part if hierarchical tags are used, i.e. tag1::tag2::tag3 -> tag3
         $('#tags').each(function (index, elem) {
-            $(elem).text($(elem).text().replace(/\S+::/g, ''));
+            $(elem).text($(elem).text().replace(/(\S+::)*/g, ''));
         });
 
-
-        // GENERATE LINK
+        // generate link
         //      turn url-like plain text into clickable link
         $('#source').html(function (index, oldhtml) {
             return Autolinker.link(oldhtml, {
@@ -197,16 +192,16 @@
             })
         });
 
-
-        // SCROLL TO FIRST CLOZE
+        // scroll to first cloze
         if (genuineClozeTotalNumber) {
-            var $firstGenuineClozeElem = $('.genuine-cloze').first();
-            // TODO:
-            scrollToCloze($firstGenuineClozeElem.get(0))
+            var $firstGenuineCloze = $('.genuine-cloze').first();
+            $firstGenuineCloze.parents('.content-block').show();
+            scrollToCloze($firstGenuineCloze.get(0))
+        } else {
+            $('.content-block').show()
         }
 
-
-        // SETUP KEY BINDING
+        // setup key binding
         $(document).bind('keyup', 'i', function () {
             showOneCloze();
         })
@@ -219,108 +214,58 @@
             showAllPseudoClozes();
         })
 
-
-        // SETUP CLOZE CLICK EVENT
+        // setup cloze click event
         $('.genuine-cloze, .pseudo-cloze').click(function () {
             toggleCloze(this, 'toggle');
         });
 
+        // setup hot area click event
         $('#show-one-cloze-left, #show-one-cloze-right').click(function () {
             showOneCloze();
         });
 
-        // $('#show-one-pseudo-cloze-left, #show-one-pseudo-cloze-right').click(function () {
-        //     showOneCloze('pseudo');
-        // });
-
-        // $('#show-all-pseudo-clozes').click(function () {
-        //     showAllPseudoClozes();
-        // })
-
-
-        // SETUP DOMAIN ICON CLICK EVENT
-        $('#domain-icon').click(function (event) {
-            if (platform === 'win') {
-                initAndToggleEditor(event)
-            }
+        // setup domain icon click event
+        var $notepadSection = $('#notepad-section');
+        $notepadSection.draggable();
+        $('#domain-icon').click(function () {
+            $notepadSection.toggle();
         })
 
-        $('#domain-icon').contextmenu(function (event) {
-            event.preventDefault();
-            if (platform === 'win') {
-                initAndToggleEditor(event, 'Text')
-            }
-        })
-
-        // SETUP HEADER CLICK EVENT
+        // setup header click event
         var headerIds = ['info-header', 'source-header', 'extra-header'];
         $.each(headerIds, function (index, id) {
             $elem = $('#' + id)
-            if ($elem.length) {
-                $elem.click(function () {
-                    toggleNextElement(this)
-                })
-            }
+            $elem.click(function () {
+                toggleNextElement(this)
+            })
         })
 
-
-        $('#domain-icon').effect('pulsate');
     });
 
-    function initAndToggleEditor(event, mode) {
-        if (!editorInMain) {
-            $('#editor-framework').attr('src', '_js_editor.html')
-            $('#editor-framework').on('load', function () {
-                editorInMain = document.getElementById('editor-framework').contentWindow.editor;
-                $('#editor-section').draggable();
-                initLangSelector();
-                if (mode === 'Text') {
-                    $('#lang-selector option[value="' + 'text' + '"]').attr('selected',
-                        true)
-                } else {
-                    $('#lang-selector option[value="' + event.target.title.toLowerCase() +
-                        '"]').attr('selected', true)
-                }
-                var selection;
-                if (selection = window.getSelection()) {
-                    editorInMain.setValue(selection.toString())
-                }
-                toggleEditor(event)
-            })
-        } else {
-            toggleEditor(event)
-        }
-    }
 
     function setDomainIcon() {
-        var englishNormalDomains = ['Anki', 'Android', 'JavaScript', 'VIM', 'Todoist', 'CMD', 'jQuery', 'CSS', 'HTML',
-            'Python', 'Java', 'SQL'
-        ];
-        var domainText = $('#domain').text()
-        var domainTextSubwords = domainText.match(/\w+/g)
-        if (domainTextSubwords !== null) {
-            domainTextSubwords.forEach(function (domain) {
-                if (englishNormalDomains.indexOf(domain) !== -1) {
-                    addDomainIcon(domain)
-                }
-            })
-        }
-
-        var chineseDomains = {
-            '佛教': 'buddist',
-            '多语言': 'multi-lang',
+        var domainList = ['Android', 'CMD', 'CSS', 'HTML', 'Java', 'JavaScript', 'Python', 'SQL', 'Todoist', 'VIM',
+            'jQuery'
+        ]
+        var domainMap = {
             '算法': 'algorithm',
         }
-        for (var chinese in chineseDomains) {
-            if ($('#domain').text().search(chinese) !== -1) {
-                var domain = chineseDomains[chinese]
-                addDomainIcon(domain, chinese)
+
+        var $domain = $('#domain');
+        var domainText = $domain.text()
+        var regexp = new RegExp('\\s*([^,@]+)(?=,|$)', 'g');
+        for (var match; match = regexp.exec(domainText);) {
+            var domain = match[1];
+            if (domainList.indexOf(domain) !== -1) {
+                addDomainIcon(domain)
+            } else if (domainMap.hasOwnProperty(domain)) {
+                addDomainIcon(domainMap[domain], domain)
             }
         }
 
-        if ($('#domain-icon img').length === 0) {
-            addDomainIcon('Void')
-        }
+        // if (!$('#domain-icon img').length) {
+        //     addDomainIcon('Void')
+        // }
     }
 
     function addDomainIcon(domain, title) {
@@ -329,63 +274,17 @@
         var imgElem = document.createElement('img');
         imgElem.src = imgSrc
         imgElem.title = title
-        imgElem.setAttribute('class', 'img-no-border')
+        imgElem.className = 'img-no-border'
         $('#domain-icon').append(imgElem)
     }
 
-    function toggleEditor(event) {
-        // var currentLang = editorInMain.session.getMode()['$id'].replace(/.*\//, '')
-        var lang = event.target.title.toLowerCase()
-        if (lang === 'jquery') {
-            lang = 'javascript';
-        }
-        if (customLang) {
-            lang = customLang
-        }
-        editorInMain.session.setMode('ace/mode/' + lang)
-        $('#editor-section').toggle(0);
-    }
 
-    function initLangSelector() {
-        var langSelectorList = ['Text'].concat(['HTML', 'CSS', 'Javascript', 'Java', 'Python', 'SQL'].sort());
-        for (var index in langSelectorList) {
-            var lang = langSelectorList[index];
-            var optElem = document.createElement('option');
-            optElem.value = lang.toLocaleLowerCase();
-            optElem.textContent = lang;
-            document.getElementById('lang-selector').appendChild(optElem)
-        }
-        $('#lang-selector').change(function (event) {
-            customLang = this.value;
-            editorInMain.session.setMode('ace/mode/' + customLang)
-        })
-    }
+    function scrollToCloze(elem) {
+        var upperMargin = (platform === 'win') ? 200 : 150;
 
-    function scrollToCloze(elem, isFirst) {
-        var upperPadding = (platform === 'win') ? 200 : 150;
         $('html, body').animate({
-            scrollTop: $(elem).offset().top - upperPadding
+            scrollTop: $(elem).offset().top - upperMargin
         }, 500);
-        // if (isFirst) {
-        //     $('html').promise().done(function () {
-        //         $('#topic-section-win').css('top', function () {
-        //                 return elem.getBoundingClientRect().top - this.offsetHeight - 10;
-        //             })
-        //             .delay(3000).animate({
-        //                 top: 0
-        //             }, 500);
-        //     })
-        // }
-        // if (isFirst) {
-        //     $('html').promise().done(function () {
-        //         $('#topic-section-win').css('top', function () {
-        //             // return elem.getBoundingClientRect().top - this.offsetHeight - 10;
-        //             return elem.getBoundingClientRect().top + 80;
-        //         }).css('display', 'block').delay(2000).animate({
-        //             top: 0
-        //         }, 500);
-        //     })
-        // }
 
         if (!$(elem).visible()) {
             $('html, body').animate({
@@ -397,49 +296,59 @@
     function showOneCloze(mode) {
         if (mode !== 'pseudo') {
             if (indexOfGenuineClozeToShow >= genuineClozeTotalNumber) {
-                $('#no-more-cloze').css('background-color', '#db4437');
-                $('#no-more-cloze').animate({
+                $('#no-more-cloze').css('background-color', '#db4437').animate({
                     display: "toggle",
-                }, 500);
+                }, 300);
             } else {
                 $('.genuine-cloze[index=' + indexOfGenuineClozeToShow + ']').each(function (index, elem) {
-                    showCloze(index, elem);
+                    showCloze(elem);
                 })
             }
         } else {
+            var shownPseudoClozeIndex = $('.pseudo-cloze[show-state="answer"]').last().attr('index');
+            indexOfPseudoClozeToShow = shownPseudoClozeIndex !== undefined ? Number(shownPseudoClozeIndex) + 1 : 0;
             if (indexOfPseudoClozeToShow >= pseudoClozeTotalNumber) {
-                $('#no-more-cloze').css('background-color', '#4285f4');
-                $('#no-more-cloze').animate({
+                $('#no-more-cloze').css('background-color', '#4285f4').animate({
                     display: "toggle",
-                }, 500);
+                }, 300);
             } else {
                 $('.pseudo-cloze[index=' + indexOfPseudoClozeToShow + ']').each(function (index, elem) {
-                    showCloze(index, elem);
+                    showCloze(elem);
                 })
             }
         }
+    }
 
-        function showCloze(index, elem) {
-            if ($(elem).parents('#note:hidden').length) {
-                $("#note").show(0);
-                scrollToCloze(elem)
-            } else {
-                if (!$(elem).visible()) {
-                    scrollToCloze(elem);
-                } else {
-                    toggleCloze(elem, 'answer');
-                    if (!$(elem).visible()) {
-                        scrollToCloze(elem);
-                    }
-                    $(elem).hide(0);
-                    $(elem).fadeIn(500);
-                    if ($(elem).hasClass('genuine-cloze')) {
-                        indexOfGenuineClozeToShow++;
-                    } else {
-                        indexOfPseudoClozeToShow++;
-                    }
-                }
+    function showCloze(elem) {
+        var $elem = $(elem);
+        $parentContentBlock = $elem.parents('.content-block:hidden')
+
+        if ($parentContentBlock.length) {
+            $parentContentBlock.show();
+            if (!$elem.visible()) {
+                scrollToCloze(elem);
             }
+            return;
+        }
+
+        if (!$elem.visible()) {
+            scrollToCloze(elem);
+            return;
+        }
+
+        toggleCloze(elem, 'answer');
+
+        if (!$elem.visible()) {
+            scrollToCloze(elem);
+        }
+
+        $elem.hide();
+        $elem.fadeIn(500);
+
+        if ($elem.hasClass('genuine-cloze')) {
+            indexOfGenuineClozeToShow++;
+        } else {
+            indexOfPseudoClozeToShow++;
         }
     }
 
@@ -449,49 +358,62 @@
         })
     }
 
-    function toggleCloze(elem, displayOption) {
-        var answer = '',
-            hint = '';
+    function toggleCloze(elem, option) {
+        var answer = '';
+        var hint = '';
+        var answerText = '';
         var index = $(elem).attr('index');
+
         if ($(elem).hasClass('genuine-cloze')) {
             answer = $('#genuine-cloze-answer-' + index).html();
             hint = $('#genuine-cloze-hint-' + index).html();
+            answerText = $('#genuine-cloze-answer-' + index).text();
         } else {
             answer = $('#pseudo-cloze-answer-' + index).html();
             hint = $('#pseudo-cloze-hint-' + index).html();
+            answerText = $('#pseudo-cloze-answer-' + index).text();
         }
 
-        // var answerTextDiv = document.createElement('div');
-        // var $answerTextDiv = $(answerTextDiv);
-        // $answerTextDiv.text(answer);
-        // var answerText = $answerTextDiv.text();
-        // if (answerText.match(/^\/\/$/) || answerText.match(/^``$/)) {
-        //     hint = answer;
-        //     hint = '&nbsp;' + hint + '&nbsp;';
-        // } else {
-        hint = '&nbsp;[&nbsp;' + hint + '&nbsp;]&nbsp;';
-        // }
+        var specialAnswerFlag = false;
+        var specialAnswerModes = ['^//$', '^``$'];
+        $.each(specialAnswerModes, function (index, mode) {
+            var regexp = new RegExp(mode);
+            if (answerText.match(regexp)) {
+                specialAnswerFlag = true;
+                return false;
+            }
+        })
+        if (specialAnswerFlag) {
+            hint = '&nbsp;' + answer + '&nbsp;';
+        } else {
+            hint = '&nbsp;[&nbsp;' + hint + '&nbsp;]&nbsp;';
+        }
 
-
-        if (displayOption == 'answer') {
-            $(elem).attr('show-state', 'answer');
-            $(elem).html(answer);
-        } else if (displayOption == 'hint') {
-            $(elem).attr('show-state', 'hint');
-            $(elem).html(hint);
-        } else if (displayOption == 'toggle') {
-            if ($(elem).attr('show-state') == 'hint') {
+        switch (option) {
+            case 'answer':
                 $(elem).attr('show-state', 'answer');
                 $(elem).html(answer);
-            } else {
+                break;
+            case 'hint':
                 $(elem).attr('show-state', 'hint');
                 $(elem).html(hint);
-            };
-        };
+                break;
+            case 'toggle':
+                if ($(elem).attr('show-state') === 'hint') {
+                    $(elem).attr('show-state', 'answer');
+                    $(elem).html(answer);
+                } else {
+                    $(elem).attr('show-state', 'hint');
+                    $(elem).html(hint);
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     function toggleNextElement(elem) {
-        $(elem).next().toggle(0);
+        $(elem).next().toggle();
     };
 </script>
-<tt_s preset="NAVER Translate (en)" style="display: none">{{Domain}}</tts>
+<tt-s preset="NAVER Translate (en)" style="display: none">{{Domain}}</tts>

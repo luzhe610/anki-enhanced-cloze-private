@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
-# TODO: setfocus
+from __future__ import unicode_literals
+
 import re
 
-# import aqt
-from aqt import mw
 from aqt.qt import *
-from aqt.utils import tooltip
+
+from aqt import mw
 from aqt.addcards import AddCards
-from aqt.editcurrent import EditCurrent
 from aqt.browser import Browser
+from aqt.editcurrent import EditCurrent
 from aqt.editor import Editor
+from aqt.utils import tooltip
+
 from anki.hooks import addHook, wrap
 
 # from bs4 import BeautifulSoup
@@ -61,7 +63,7 @@ def update_cloze_fields(note):
     else:
         in_use_clozes_numbers = sorted(
             [int(re.search(r"\d+", x).group()) for x in set(cloze_start_matches)])
-        note[IN_USE_CLOZES_FIELD_NAME] = str(in_use_clozes_numbers)
+        note[IN_USE_CLOZES_FIELD_NAME] = unicode(str(in_use_clozes_numbers))
 
         # Fill in content in in-use cloze fields and empty content in not-in-use fields
         global filling_cloze_field_number
@@ -102,7 +104,7 @@ def update_cloze_fields(note):
                     dest_field_content += '<pre style="display:none"><div id="pseudo-cloze-hint-{}">{}</div></pre>'.format(
                         index, item)
 
-                dest_field_content += '<div style="display:none">{{c{}::@@@@}}</div>'.format(
+                dest_field_content += '<div style="display:none">{{c%s::@@@@}}</div>' % (
                     filling_cloze_field_number)
                 dest_field_content += '<div id="card-cloze-id" style="display:none">c{}</div>'.format(
                     filling_cloze_field_number)
@@ -162,7 +164,8 @@ def on_edit_current_save(self, _old):
 
 
 def on_add_cards_and_edit_current(self, _old):
-    self.editor.saveNow()
+    # self.editor.saveNow()
+    self.editor.web.eval('saveFields("key")')
     note = self.editor.note
     if not note or not check_model(note.model()):
         return _old(self)
@@ -265,18 +268,21 @@ def remove_cloze_wrapper_of_string(string):
 
 
 def process_content_fields(editor):
-    editor.saveNow()
+    # editor.saveNow()
+    editor.web.eval("saveField('key');")
     note = editor.note
     if not note or not check_model(note.model()):
         return
     remove_style_attr_of_note(note)
     add_cloze_wrapper_of_note(note)
     editor.loadNote()
+    editor.web.eval("focusField(%d);" % editor.currentField)
     # mw.progress.timer(100, editor.loadNote, False)
 
 
 def empty_cloze_fields(editor):
-    editor.saveNow()
+    # editor.saveNow()
+    editor.web.eval("saveField('key');")
     note = editor.note
     if not note or not check_model(note.model()):
         return
@@ -284,20 +290,36 @@ def empty_cloze_fields(editor):
         dest_field_name = "Cloze{}".format(cloze_field_number)
         note[dest_field_name] = ""
     editor.loadNote()
+    editor.web.eval("focusField(%d);" % editor.currentField)
+
+
+def remove_cloze_wrapper(editor):
+    # editor.saveNow()
+    editor.web.eval("saveField('key');")
+    note = editor.note
+    if not note or not check_model(note.model()):
+        return
+    for content_field_name in CONTENT_FIELD_NAME_LIST:
+        note[content_field_name] = remove_cloze_wrapper_of_string(
+            note[content_field_name])
+    editor.loadNote()
+    editor.web.eval("focusField(%d);" % editor.currentField)
 
 
 def setup_buttons(editor):
-
+    PROCESS_CONTENT_FIELDS_KEY = "Ctrl+Shift+P"
     b = editor._addButton("Process content fields", lambda edt=editor: process_content_fields(
-        edt), text="[P]", size=False, tip="Process content fields", key="Ctrl+Shift+P")
+        edt), text="[P]", size=True, tip="Process content fields<br>({})".format(_(PROCESS_CONTENT_FIELDS_KEY)), key=(PROCESS_CONTENT_FIELDS_KEY))
     b.setFixedWidth(30)
 
-    # b = editor._addButton("Rebuild cloze fields", lambda edt=editor: rebuild_cloze_fields(
-    #     edt), text="[R]", size=False, tip="Rebuild Cloze Fields", key="Ctrl+Shift+R")
-    # b.setFixedWidth(30)
+    REMOVE_CLOZE_WRAPPER_KEY = "Ctrl+Shift+R"
+    b = editor._addButton("Remove cloze wrapper", lambda edt=editor: remove_cloze_wrapper(
+        edt), text="[R]", size=True, tip="Remove cloze wrapper<br>({})".format(_(REMOVE_CLOZE_WRAPPER_KEY)), key=_(REMOVE_CLOZE_WRAPPER_KEY))
+    b.setFixedWidth(30)
 
+    EMPTY_CLOZE_FIELDS_KEY = "Ctrl+Shift+E"
     b = editor._addButton("Empty cloze fields", lambda edt=editor: empty_cloze_fields(
-        edt), text="[E]", size=False, tip="Empty cloze fields", key="Ctrl+Shift+E")
+        edt), text="[E]", size=True, tip="Empty cloze fields<br>({})".format(_(EMPTY_CLOZE_FIELDS_KEY)), key=_(EMPTY_CLOZE_FIELDS_KEY))
     b.setFixedWidth(30)
 
 
