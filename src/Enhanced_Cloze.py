@@ -14,7 +14,6 @@ from aqt.utils import tooltip
 
 from anki.hooks import addHook, wrap
 
-# from bs4 import BeautifulSoup
 # global variables
 genuine_cloze_answer_array = []
 genuine_cloze_hint_array = []
@@ -142,7 +141,6 @@ def process_cloze(matchObj):
         index_in_array = len(pseudo_cloze_answer_array) - 1
         new_html = '<lz-cloze class="pseudo-cloze" index="{}" show-state="hint" cloze-id="{}">{}</lz-cloze>'.format(
             index_in_array, cloze_id, cloze_string.replace("{{", '[[').replace("}}", "]]"))
-        return new_html
     else:
         # Process genuine-cloze
         global genuine_cloze_answer_array
@@ -152,21 +150,12 @@ def process_cloze(matchObj):
         index_in_array = len(genuine_cloze_answer_array) - 1
         new_html = '<lz-cloze class="genuine-cloze" index="{}" show-state="hint" cloze-id="{}">{}</lz-cloze>'.format(
             index_in_array,  cloze_id, cloze_string)
-        return new_html
+    return new_html
 
 
-def on_add_cards(self, _old):
-    on_add_cards_and_edit_current(self, _old)
-
-
-def on_edit_current_save(self, _old):
-    on_add_cards_and_edit_current(self, _old)
-
-
-def on_add_cards_and_edit_current(self, _old):
-    # self.editor.saveNow()
-    self.editor.web.eval('saveFields("key")')
-    note = self.editor.note
+def on_save_now(self, _old):
+    self.web.eval('saveFields("key")')
+    note = self.note
     if not note or not check_model(note.model()):
         return _old(self)
     remove_style_attr_of_note(note)
@@ -232,10 +221,6 @@ def setup_menu(window):
     else:
         a.triggered.connect(
             lambda _, b=window: update_all_enhanced_clozes_in_browser(b))
-
-
-def on_save_now(self, callback=None):
-    update_all_enhanced_clozes()
 
 
 def remove_style_attr_of_note(note):
@@ -327,10 +312,7 @@ def on_browser_close(self, evt):
     update_all_enhanced_clozes_in_browser(self)
 
 
-AddCards.addCards = wrap(AddCards.addCards, on_add_cards, "around")
-EditCurrent.onSave = wrap(EditCurrent.onSave, on_edit_current_save, "around")
-# Browser.closeEvent = wrap(Browser.closeEvent, on_browser_close, "before")
-# Editor.saveNow = wrap(Editor.saveNow, on_save_now, "before")
+Editor.saveNow = wrap(Editor.saveNow, on_save_now, "around")
 
 # Main window and browser menu
 setup_menu(mw)
