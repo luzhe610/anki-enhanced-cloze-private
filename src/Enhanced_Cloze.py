@@ -11,8 +11,12 @@ from aqt.browser import Browser
 from aqt.editcurrent import EditCurrent
 from aqt.editor import Editor
 from aqt.utils import tooltip
-
 from anki.hooks import addHook, wrap
+
+from Add_note_id import id_fields
+
+import bs4
+
 
 # global variables
 genuine_cloze_answer_array = []
@@ -230,9 +234,13 @@ def remove_style_attr_of_note(note):
 
 
 def remove_style_attr_of_string(string):
-    string = re.sub(
-        r"(<[^>]*?)(style\s*?=\s*?(?P<quot>[\"\'])[\s\S]*?(?P=quot))([\s\S]*?>)", "\g<1>\g<4>", string)
-    return string
+    soup = bs4.BeautifulSoup(string)
+    for tag in soup.find_all(True):
+        for attr in ['style']:
+            del tag[attr]
+    # string = re.sub(
+    #     r"(<[^>]*?)(style\s*?=\s*?(?P<quot>[\"\'])[\s\S]*?(?P=quot))([\s\S]*?>)", "\g<1>\g<4>", string)
+    return unicode(soup)
 
 
 def add_cloze_wrapper_of_note(note):
@@ -253,7 +261,6 @@ def remove_cloze_wrapper_of_string(string):
 
 
 def process_content_fields(editor):
-    # editor.saveNow()
     editor.web.eval("saveField('key');")
     note = editor.note
     if not note or not check_model(note.model()):
@@ -266,7 +273,6 @@ def process_content_fields(editor):
 
 
 def empty_cloze_fields(editor):
-    # editor.saveNow()
     editor.web.eval("saveField('key');")
     note = editor.note
     if not note or not check_model(note.model()):
@@ -279,7 +285,6 @@ def empty_cloze_fields(editor):
 
 
 def remove_cloze_wrapper(editor):
-    # editor.saveNow()
     editor.web.eval("saveField('key');")
     note = editor.note
     if not note or not check_model(note.model()):
@@ -292,9 +297,9 @@ def remove_cloze_wrapper(editor):
 
 
 def setup_buttons(editor):
-    PROCESS_CONTENT_FIELDS_KEY = "Ctrl+Shift+P"
+    PROCESS_CONTENT_FIELDS_KEY = "Ctrl+Shift+A"
     b = editor._addButton("Process content fields", lambda edt=editor: process_content_fields(
-        edt), text="[P]", size=True, tip="Process content fields<br>({})".format(_(PROCESS_CONTENT_FIELDS_KEY)), key=(PROCESS_CONTENT_FIELDS_KEY))
+        edt), text="[A]", size=True, tip="Process content fields<br>({})".format(_(PROCESS_CONTENT_FIELDS_KEY)), key=(PROCESS_CONTENT_FIELDS_KEY))
     b.setFixedWidth(30)
 
     REMOVE_CLOZE_WRAPPER_KEY = "Ctrl+Shift+R"
@@ -312,10 +317,24 @@ def on_browser_close(self, evt):
     update_all_enhanced_clozes_in_browser(self)
 
 
+def on_edit_focus_lost(flag, note, fidx):
+    field_names = mw.col.models.fieldNames(note.model())
+    field_name = field_names[fidx]
+    if field_name in id_fields:
+        return flag
+    if note[field_name] == '':
+        return flag
+    soup = bs4.BeautifulSoup(note[field_name])
+    if soup.get_text() == '':
+        note[field_name] = ''
+        return True
+    return flag
+
+
 Editor.saveNow = wrap(Editor.saveNow, on_save_now, "around")
+addHook('editFocusLost', on_edit_focus_lost)
+addHook("setupEditorButtons", setup_buttons)
 
 # Main window and browser menu
 setup_menu(mw)
 addHook("browser.setupMenus", setup_menu_in_browser)
-
-addHook("setupEditorButtons", setup_buttons)
